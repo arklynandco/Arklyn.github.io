@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arklyn Consumer Lab</title>
+
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial, sans-serif;
+}
+
+body{
+background:#0f172a;
+color:white;
+overflow-x:hidden;
+}
+
+header{
+background:linear-gradient(135deg,#2563eb,#7c3aed);
+padding:25px;
+text-align:center;
+position:sticky;
+top:0;
+z-index:1000;
+box-shadow:0 2px 10px rgba(0,0,0,.4);
+}
+
+header h1{
+font-size:2rem;
+}
+
+header p{
+opacity:.9;
+margin-top:5px;
+}
+
+.hero{
+padding:80px 20px;
+text-align:center;
+}
+
+.hero h2{
+font-size:3rem;
+margin-bottom:15px;
+}
+
+.hero p{
+max-width:700px;
+margin:auto;
+color:#cbd5e1;
+line-height:1.7;
+}
+
+.btn{
+display:inline-block;
+margin-top:25px;
+padding:14px 28px;
+background:#3b82f6;
+color:white;
+text-decoration:none;
+border-radius:30px;
+font-weight:bold;
+transition:.3s;
+}
+
+.btn:hover{
+background:#2563eb;
+transform:scale(1.05);
+}
+
+.section-title{
+text-align:center;
+font-size:2rem;
+margin:40px 0;
+}
+
+.apps{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+gap:25px;
+padding:20px;
+max-width:1200px;
+margin:auto;
+}
+
+.card{
+background:#1e293b;
+border-radius:20px;
+padding:25px;
+transition:.3s;
+border:1px solid rgba(255,255,255,.08);
+}
+
+.card:hover{
+transform:translateY(-8px);
+box-shadow:0 10px 25px rgba(59,130,246,.3);
+}
+
+.icon{
+font-size:3rem;
+margin-bottom:15px;
+}
+
+.card h3{
+margin-bottom:10px;
+}
+
+.card p{
+color:#cbd5e1;
+line-height:1.6;
+}
+
+.open-btn{
+display:inline-block;
+margin-top:15px;
+padding:10px 20px;
+background:#3b82f6;
+border-radius:10px;
+text-decoration:none;
+color:white;
+}
+
+.stats{
+display:flex;
+justify-content:center;
+flex-wrap:wrap;
+gap:30px;
+padding:60px 20px;
+}
+
+.stat-box{
+background:#1e293b;
+padding:25px;
+border-radius:15px;
+text-align:center;
+min-width:180px;
+}
+
+.number{
+font-size:2rem;
+font-weight:bold;
+color:#3b82f6;
+}
+
+footer{
+margin-top:50px;
+padding:25px;
+text-align:center;
+background:#020617;
+color:#94a3b8;
+}
+
+.search-box{
+max-width:600px;
+margin:30px auto;
+padding:0 20px;
+}
+
+.search-box input{
+width:100%;
+padding:15px;
+border:none;
+outline:none;
+border-radius:30px;
+font-size:16px;
+}
+
+.hidden{
+display:none;
+}
+</style>
+</head>
+<body>
+
+<header>
+<h1>ARKLYN CONSUMER LAB</h1>
+<p>Innovation • Education • Entertainment</p>
+</header>
+
+<section class="hero">
+<h2>Welcome to Arklyn Consumer Lab</h2>
+<p>
+Explore powerful digital products including Dictionary,
+Ludo Games, Classified Ads, General Knowledge Apps and
+many more innovative services.
+</p>
+
+<a href="#apps" class="btn">Explore Products</a>
+</section>
+
+<div class="search-box">
+<input type="text" id="searchInput" placeholder="Search apps...">
+</div>
+
+<h2 class="section-title" id="apps">Our Products</h2>
+
+<div class="apps">
+
+<div class="card">
+<div class="icon">📖</div>
+<h3>Dictionary</h3>
+<p>English to Khasi dictionary with fast search and offline access.</p>
+<a href="DictionaryHome.html" class="open-btn">Open</a>
+</div>
+
+<div class="card">
+<div class="icon">🎲</div>
+<h3>Ludo Game</h3>
+<p>Play exciting multiplayer and offline Ludo with friends.</p>
+<a href="#" class="open-btn">Open</a>
+</div>
+
+<div class="card">
+<div class="icon">💼</div>
+<h3>Classified Ads</h3>
+<p>Find jobs, buy and sell products, and connect with local opportunities.</p>
+<a href="#" class="open-btn">Open</a>
+</div>
+
+<div class="card">
+<div class="icon">🧠</div>
+<h3>Acquaintance GK</h3>
+<p>Improve your general knowledge through quizzes and learning modules.</p>
+<a href="#" class="open-btn">Open</a>
+</div>
+
+<div class="card">
+<div class="icon">📚</div>
+<h3>Educational Apps</h3>
+<p>Learning resources for students and competitive exam preparation.</p>
+<a href="#" class="open-btn">Open</a>
+</div>
+
+<div class="card">
+<div class="icon">🚀</div>
+<h3>Upcoming Projects</h3>
+<p>Discover future innovations currently under development.</p>
+<a href="#" class="open-btn">Open</a>
+</div>
+
+</div>
+
+<section class="stats">
+<div class="stat-box">
+<div class="number" id="appsCount">0</div>
+<div>Products</div>
+</div>
+
+<div class="stat-box">
+<div class="number" id="usersCount">0</div>
+<div>Users</div>
+</div>
+
+<div class="stat-box">
+<div class="number" id="downloadsCount">0</div>
+<div>Downloads</div>
+</div>
+</section>
+
+<footer>
+© 2026 Arklyn Consumer Lab. All Rights Reserved.
+</footer>
+
+<script>
+
+// Search Feature
+const searchInput = document.getElementById("searchInput");
+const cards = document.querySelectorAll(".card");
+
+searchInput.addEventListener("keyup", function(){
+
+let value = this.value.toLowerCase();
+
+cards.forEach(card => {
+
+let text = card.innerText.toLowerCase();
+
+if(text.includes(value)){
+card.style.display="block";
+}else{
+card.style.display="none";
+}
+
+});
+
+});
+
+// Counter Animation
+function animate(id,target){
+
+let count=0;
+
+let speed=Math.ceil(target/100);
+
+let interval=setInterval(()=>{
+
+count+=speed;
+
+if(count>=target){
+count=target;
+clearInterval(interval);
+}
+
+document.getElementById(id).innerText=count.toLocaleString();
+
+},20);
+
+}
+
+window.onload=()=>{
+
+animate("appsCount",25);
+animate("usersCount",5000);
+animate("downloadsCount",15000);
+
+};
+
+</script>
+
+</body>
+</html>
