@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KB's Dictionary English sha Khasi</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Spinning Animation */
+        @keyframes spin-custom {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(720deg); }
+        }
+        /* Waving/Pulse Wave Animation */
+        @keyframes wave-pulse {
+            0% { transform: scale(0.95); opacity: 0.8; box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.5); }
+            70% { transform: scale(1); opacity: 1; box-shadow: 0 0 0 20px rgba(37, 99, 235, 0); }
+            100% { transform: scale(0.95); opacity: 0.8; box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
+        }
+        .loader-spin-border {
+            border-top-color: #2563eb;
+            animation: spin-custom 1s linear infinite;
+        }
+        .loader-wave-container {
+            animation: wave-pulse 1.5s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col font-sans relative pb-24">
+
+    <header class="bg-blue-600 text-white px-6 py-3 flex items-center justify-between shadow-md">
+        <div class="flex items-center gap-4">
+            <div class="w-10 h-10 rounded-full bg-blue-700 flex items-center justify-center text-xs font-bold shadow-inner shrink-0 overflow-hidden">
+                <img src="CompanyLogo.png" class="brand-logo object-cover w-full h-full" alt="Logo">
+            </div>
+            <h1 class="text-xl md:text-2xl font-bold tracking-wide">Arklyn.Studio</h1>
+        </div>
+    </header>
+
+    <nav class="bg-blue-500 text-white px-6 py-2 flex justify-between items-center text-sm font-medium shadow-sm">
+        <div class="flex gap-4">
+            <a href="DictionaryHome.html" class="hover:underline transition">Home</a>
+            <a href="#" class="hover:underline transition">Privacy</a>
+            <a href="#" class="hover:underline transition">Contact us</a>
+        </div>
+    </nav>
+
+    <main class="flex-1 max-w-3xl w-full mx-auto p-4 md:p-6 pb-10">
+        
+        <div class="text-center my-6">
+            <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">KB's</h2>
+            <p class="text-xl font-semibold text-slate-500 mt-1">Dictionary English sha Khasi</p>
+        </div>
+
+        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm max-w-2xl mx-auto">
+            <div class="flex flex-col sm:flex-row items-center gap-4">
+                <input type="text" id="wordInput" oninput="handleInputChange()" placeholder="Enter a word here..." class="w-full sm:flex-1 border-2 border-slate-200 rounded-xl p-4 text-base focus:outline-none focus:border-blue-600 font-medium transition bg-slate-50 focus:bg-white">
+                <button onclick="handleSearch()" class="w-full sm:w-auto shrink-0 bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-6 rounded-xl shadow-md cursor-pointer transition text-base tracking-wide whitespace-nowrap">
+                    Show Definition
+                </button>
+            </div>
+        </div>
+
+        <div id="adWrapperZone" class="max-w-2xl mx-auto mt-4">
+            <div id="midNativeAdContainer" class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm relative select-none">
+                <div class="absolute top-1 left-2 text-[8px] uppercase tracking-widest text-slate-400 font-bold">Native Advertisement</div>
+                <div class="flex items-center gap-4 pt-2">
+                    <div class="w-12 h-12 bg-slate-100 rounded-lg flex items-center justify-center shrink-0 text-slate-400">
+                        <i class="fa-solid fa-layer-group text-xl"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h4 class="text-sm font-bold text-slate-700 truncate">Smarter Offline Translators Plus</h4>
+                        <p class="text-xs text-slate-400 truncate">Download clean premium diction packages for localized learning.</p>
+                    </div>
+                    <a href="#" class="bg-slate-100 hover:bg-blue-50 hover:text-blue-600 transition text-slate-600 text-xs font-bold px-3 py-2 rounded-lg whitespace-nowrap">Install</a>
+                </div>
+            </div>
+        </div>
+
+        <div id="searchLoader" class="hidden my-6 flex flex-col items-center justify-center gap-4">
+            <div class="relative w-24 h-24 flex items-center justify-center">
+                <div class="loader-wave-container absolute inset-0 bg-blue-100 rounded-full"></div>
+                <div class="loader-spin-border absolute inset-0 border-4 border-slate-200 rounded-full"></div>
+                <div class="relative z-10 w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center text-white font-black text-xl shadow-md">
+                    KB
+                </div>
+            </div>
+            <p class="text-sm font-bold text-blue-600 tracking-wider uppercase animate-pulse">Searching Dictionary...</p>
+        </div>
+
+        <div id="definitionBox" class="hidden mt-4 bg-white border border-slate-200 rounded-2xl p-6 shadow-md max-w-xl mx-auto relative overflow-hidden max-h-[400px] overflow-y-auto">
+            <div id="watermark" class="absolute inset-0 flex items-center justify-center text-[80px] md:text-[120px] font-black text-slate-500 opacity-[0.08] pointer-events-none select-none rotate-[-20deg] z-0">
+                KB
+            </div>
+            
+            <h3 class="text-xs font-bold text-slate-400 tracking-wider uppercase mb-3">Result:</h3>
+            <div id="htmlContentArea" class="relative z-10 text-slate-800 leading-relaxed text-base"></div>
+            
+            <div id="exampleContent" class="relative z-10 mt-4 pt-4 border-t border-slate-100 space-y-4">
+                <div>
+                    <h3 class="text-xs font-bold text-slate-400 tracking-wider uppercase mb-1">Example:</h3>
+                    <p id="exampleText" class="text-slate-700 italic font-medium text-base leading-relaxed bg-slate-50 p-3 rounded-xl border border-slate-100"></p>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <div id="popupModal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl border border-slate-100 transform transition-all scale-100">
+            <h4 id="popupTitle" class="text-xl font-bold text-slate-900 mb-2">Jingtip</h4>
+            <p id="popupMessage" class="text-sm md:text-base text-slate-700 mb-2 leading-relaxed">Dynamic response messaging.</p>
+            <div id="popupActions" class="flex justify-end gap-2.5"></div>
+        </div>
+    </div>
+
+    <div id="bottomBannerAd" class="fixed bottom-0 left-0 right-0 h-[60px] bg-slate-200 border-t border-slate-300 flex items-center justify-center z-40 shadow-inner select-none">
+        <div class="absolute top-1 left-2 text-[9px] uppercase tracking-widest text-slate-400 font-bold">Advertisement</div>
+        <div class="text-xs font-semibold text-slate-500 flex items-center gap-2">
+            <i class="fa-solid fa-rectangle-ad text-lg text-slate-400"></i>
+            <span>Banner Ad: 728x90 Placement Holder — Support Apps</span>
+        </div>
+    </div>
+
+<script>
+    const localDictionary = {
+  
+"a": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> U; Ka; Uwei; Kawei;  Shi.<br>U dak pule alphabet u ba nyngkong napdeng ki alphabet phareng.</em>`,
+"aardvark": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> U kynja mrad uba bam dkhiew.</em>`,
+"aback": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adverb:</i></b></p><p>=> Kyndit; Kyndit kynsan; Shadien.</em>`,
+"abacus": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka tiar baju pyndonkam ban kheiñ jingkheiñ.</em>`,
+"abaft": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka bynta ba shadien eh jong ka jhad.</em>`,
+"abandon": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Iehnoh; Kyntait noh; Ïehnoh ïa kaei kaei shaei shaei.</em>`,
+"abandoned": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Bala iehnoh; Bala kyntait; Bala shah iehnoh.</em>`,
+"abase": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Pynrit; Pynhapoh; Pynhiar.</em>`,
+"abash": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Pynlehraiñ.</em>`,
+"abate": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Rungjubor; Thom daka bor; Pynduh.</em>`,
+"abatement": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingthom daka bor; ka jingpynduh; Ka jingrung jubor.</em>`,
+"abattoir": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jaka ne ka ïing pynïap briew; Ka jaka pynïap ïa ki mrad na bynta ka doh.</em>`,
+"abba": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> U Blei u Kpa haka ktien Hebru.</em>`,
+"abbe": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> U lyngdoh; U pastor.</em>`,
+"abbess": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka lyngdoh rangbah duh jong ki riewniam pukir.</em>`,
+"abbey": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jaka shong ki lyngdoh.</em>`,
+"abbot": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> U lyngdoh ba ha khlieh duh; U lyngdoh ba rangbah duh.</em>`,
+"abbreviate": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Pynlyngkot; Thoh lyngkot; Ba thoh shiteng dak.</em>`,
+"abbreviation": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingthoh lyngkot ïa ki dak.</em>`,
+"abdicate": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Iehnoh ïaka khet ne kyrdan ba ju bat man ka por.</em>`,
+"abdicate responsibilities": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingiehnoh ban kitkhlieh ïa kano kano ka kam.</em></p>`,
+"abdication": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingïehnoh ïa ka kyrdan ne ka khet kum ki nongpynïaid ne nong bahkhlieh ïa kano kano ka kam.; Ka jinghiar khet.</em></p>`,
+"abdomen": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka kpoh</em>`,
+"abdominal": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Ba dei shaphang ka kpoh.</em></p>`,
+"abduct": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Rahbor.</em>`,
+"abduction": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingrahbor daka lynti ka bymdei.</em>`,
+"abductor": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> U nongrahbor ba da ka lynti kaba bakla.</em>`,
+"abed": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adverb:</i></b></p><p>=> Halor jingthiah.</em>`,
+"abel": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> U khun jong u Adam.</em>`,
+"aberrate": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Ïaid bakla; Ïaid ne im haka lynti ka bymdei.</em>`,
+"aberration": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingïaid bakla naka lynti kaba bha.</em>`,
+"abet": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Perb:</i></b></p><p>=> Pynshit ne Pynshlur ban leh ïa kano kano ka kam ba sniew; Pynshlur ban leh kam sniew; Pynshoi haki kam ba sniew.</em>`,
+"abetting": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingïarap ïano ïano ban leh kam sniew.</em></p>`,
+"abetted": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Bala ïarap ban leh kam sniew; Ba pynshit ban leh kam sniew.</em></p>`,
+"abeyance": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingpynjlan; Ka jingpyntud; Ka jingpynslem ïaka por Ka jingpynsangeh shipor.</em>`,
+"abhor": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Isih.</em>`,
+"abhorrence": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingisih; Ka jingijli.</em>`,
+"abhorring": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Isih; Ijli.</em></p>`,
+"abhorred": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Ba la isih bad ijli; Ba isih; Ba ijli.</em></p>`,
+"abhorrent": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Ba isih ne ijli; Badei shaphang ka jingisih.</em>`,
+"abide": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Ban isih bha ïano ïano ne ïa kaei re kaei; Shong; Sah; Bteng.</em>`,
+"abiding": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Ba isih bha ïa kaei re kaei; Ba bteng; Ba shong ne ba sah.</em>`,
+"ability": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jinglah.</em><br><em><p><b><i> Verb:</i></b></p><p>=> Lah.</em><br><em><p><b><i> Adjective:</i></b></p><p>=> Balah.</em>`,
+"abilities": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka bor pyrkhat jong ka jinglah ban leh eiei; Ka jinglah.</em>`,
+"abject": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Ba hapoh; Ba sngewrit; Ba rit mynsiem.</em>`,
+"abjectness": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jinglong bahapoh; Kaba hapoh; Ka jingsngewrit; Ka jingrit mynsiem.</em>`,
+"abjure": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Tim; Kñia; Kren byrtong; Kren khñium.</em>`,
+"ablaze": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Ba meh buh ne mih kynsan buh; Ba meh kynsan ir; Ba shit ne ing kynsan.</em>`,
+"able": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Balah.</em>`,
+"ably": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Ba tbit; Ba stad.</em>`,
+"ablush": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Ba la sawkyrang; Ba lehraiñ.</em>`,
+"ablution": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingpynsum ïaka metïap; Ka jingpynsait ne pynñiat um ïaka metïap.</em>`,
+"able bodies": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jinglah lut baroh kumba kiwei ki briew ki don ne lah.</em></p>`,
+"abnegate": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jinglen lade; Ka jingkheiñduh.</em>`,
+"abnormal": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Balong duna haka jingmut jingpyrkhat; Ba kum u biej; Bym biang haka jingmut jingpyrkhat; Bym long kumba julong lem kiwei.</em>`,
+"abnormality": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingbym bit bym biang ha ka met ka phad.</em></p>`,
+"abnormally": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adverb:</i></b></p><p>=> Da ka bymïadei; Ha kaba pher na kaba ju long barabor.</em></p>`,
+"aboard": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adverb:</i></b></p><p>=> Halor ka lieng ne ka jhad; Halor ka rel ne eropleiñ ne ha ka bus.</em>`,
+"abode": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jaka shong jaka sah; Ka ïing.</em>`,
+"abolish": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Pynduh ïa ka aiñ ne ïa kaei kaei.</em>`,
+"abolition": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingpynduh noh ïa kaaiñ ne kino kino ki rai.</em>`,
+"abom": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> U tiar pynbthei; Uei uei uba lah ban pynbthei.</em>`,
+"abominable": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Badei shaphang ka jingisih; Ba isih; Ba dei shaphang ka jingijli; Ba ijli.</em>`,
+"abominably": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adverb:</i></b></p><p>=> Haka rukom long ba isih ban peit.</em></p>`,
+"abomination": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingisih; Ka jingijli.</em>`,
+"aboriginal": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Ba hyndai kulong kumah; Bala slem slem bah; Ba don jingïadei shaphang ka tynrai shaphang ki briew ba im ha Australia.</em>`,
+"aboriginal person": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> U nongshong shnong ba nyngkong.</em></p>`,
+"aborigines": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ki nongshong shnong kiba nyngkong eh.</em>`,
+"abort": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Pynhap khun; Kha ne Hap lor; Sangeh ban leh ne trei ha shuwa ban dep ka kam.</em>`,
+"abortion": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingpynhap khun; Ka jingkha lor.</em>`,
+"abortive": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Bym seisoh; Ba pulom; Bym longkam.</em>`,
+"abo system": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka rukom ba phiah ïa ka snam ha ki saw bynta , kata A,B,AB bad O.</em></p>`,
+};
+
+const secondaryExampleDatabase = {
+        "a": "I saw a bird layout tier node.",
+        "aardvark": "U aardvark u bam khap dkhiew lane niangshnong.",
+        "aback": "I was taken aback by the dynamic layout shift.",
+        "apple": "I like to eat a fresh apple in the lynter u lyiur.",
+        "book": "Pule ia kane ka kot ban nang bniah."
+    };
+
+    let cachedPendingQuery = "";
+    let currentSearchCount = 0;
+    let hasCheckedFirstAd = false; 
+
+    function showAlert(title, message, callback = null) {
+        document.getElementById('popupTitle').innerText = title;
+        document.getElementById('popupMessage').innerText = message;
+        const container = document.getElementById('popupActions');
+        container.innerHTML = '';
+
+        const btn = document.createElement('button');
+        btn.className = `px-4 py-2 text-sm font-bold rounded-xl cursor-pointer transition bg-blue-600 text-white hover:bg-blue-700`;
+        btn.innerText = 'OK';
+        btn.onclick = () => {
+            toggleModal(false);
+            if (callback) callback();
+        };
+        container.appendChild(btn);
+        toggleModal(true);
+    }
+
+    function askAdConsent(onYesCallback, onNoCallback) {
+        document.getElementById('popupTitle').innerText = "Pynthikna peit video";
+        document.getElementById('popupMessage').innerText = "Phi lah ban ai jingkyrshan lem ïa ngi da kaba phin peit video shwa khyndiat?.";
+        
+        const container = document.getElementById('popupActions');
+        container.innerHTML = '';
+
+        const noBtn = document.createElement('button');
+        noBtn.className = "px-4 py-2 text-sm font-bold rounded-xl cursor-pointer transition bg-slate-200 text-slate-700 hover:bg-slate-300";
+        noBtn.innerText = "Em";
+        noBtn.onclick = () => {
+            toggleModal(false);
+            onNoCallback();
+        };
+
+        const yesBtn = document.createElement('button');
+        yesBtn.className = "px-4 py-2 text-sm font-bold rounded-xl cursor-pointer transition bg-blue-600 text-white hover:bg-blue-700";
+        yesBtn.innerText = "Hooid";
+        yesBtn.onclick = () => {
+            toggleModal(false);
+            onYesCallback();
+        };
+
+        container.appendChild(noBtn);
+        container.appendChild(yesBtn);
+        toggleModal(true);
+    }
+
+    function showEnforcedAd(adTypeName, onCompleteCallback) {
+        const titleBadge = adTypeName === "Interstitial" ? "🎬 Interstitial Advertisement" : "🎁 Enforced Reward Advertisement";
+        document.getElementById('popupTitle').innerText = titleBadge;
+        document.getElementById('popupMessage').innerText = `Loading premium partner streaming data... Remaining: 5s.`;
+        
+        const container = document.getElementById('popupActions');
+        container.innerHTML = '';
+
+        const statusLabel = document.createElement('div');
+        statusLabel.className = "w-full text-center text-sm font-medium text-slate-400 py-2 animate-pulse";
+        statusLabel.innerText = `Displaying Ads ${adTypeName} (Required Placement)...`;
+        container.appendChild(statusLabel);
+        
+        toggleModal(true);
+
+        let timerLeft = 5;
+        const trackingInterval = setInterval(() => {
+            if (timerLeft > 0) {
+                document.getElementById('popupMessage').innerText = `Streaming secure promotional layout assets... Remaining: ${timerLeft}s.`;
+                timerLeft--;
+            } else {
+                clearInterval(trackingInterval);
+                toggleModal(false);
+                if (onCompleteCallback) onCompleteCallback();
+            }
+        }, 1000);
+    }
+
+    function toggleModal(show) {
+        const modal = document.getElementById('popupModal');
+        if (show) modal.classList.remove('hidden');
+        else modal.classList.add('hidden');
+    }
+
+    function handleInputChange() {
+        document.getElementById('definitionBox').classList.add('hidden');
+        // Re-display native elements if layout is edited
+        document.getElementById('adWrapperZone').classList.remove('hidden');
+        document.getElementById('midNativeAdContainer').classList.remove('hidden');
+    }
+
+    function handleSearch() {
+        const query = document.getElementById('wordInput').value.trim().toLowerCase();
+        if (!query) {
+            showAlert("Pynkynmaw!!!", "Sngewbha thoh ka kyntien pareng ba phi kwah.");
+            return;
+        }
+
+        cachedPendingQuery = query;
+        currentSearchCount++; 
+
+        const isInterstitialEnforced = (currentSearchCount >= 6 && (currentSearchCount - 6) % 12 === 0);
+        const isRewardedEnforced = (currentSearchCount >= 13 && (currentSearchCount - 13) % 10 === 0);
+
+        if (isInterstitialEnforced) {
+            showEnforcedAd("Interstitial", () => { triggerDelayedLookupSequence(); });
+            return;
+        }
+
+        if (isRewardedEnforced) {
+            showEnforcedAd("Rewarded", () => { triggerDelayedLookupSequence(); });
+            return;
+        }
+
+        if (!hasCheckedFirstAd) {
+            hasCheckedFirstAd = true; 
+            askAdConsent(
+                () => { showEnforcedAd("First Session Rewarded", () => { triggerDelayedLookupSequence(); }); },
+                () => { triggerDelayedLookupSequence(); }
+            );
+        } else {
+            triggerDelayedLookupSequence();
+        }
+    }
+
+    function triggerDelayedLookupSequence() {
+        document.getElementById('definitionBox').classList.add('hidden');
+        
+        const loader = document.getElementById('searchLoader');
+        loader.classList.remove('hidden');
+        loader.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+        setTimeout(() => {
+            loader.classList.add('hidden');
+            executeLookupSequence(cachedPendingQuery);
+        }, 1200);
+    }
+
+    function executeLookupSequence(word) {
+        /* Hides entire native container frame to collapse white space layout gaps completely */
+        document.getElementById('adWrapperZone').classList.add('hidden');
+        document.getElementById('midNativeAdContainer').classList.add('hidden');
+        
+        const defBox = document.getElementById('definitionBox');
+        const htmlContentArea = document.getElementById('htmlContentArea');
+        const exampleTextEl = document.getElementById('exampleText');
+        const watermark = document.getElementById('watermark');
+
+        const htmlResultString = localDictionary[word];
+        watermark.textContent = word.toUpperCase();
+
+        if (htmlResultString) {
+            htmlContentArea.innerHTML = htmlResultString;
+            exampleTextEl.innerText = secondaryExampleDatabase[word] || `Example sentence context output for standard term "${word}".`;
+        } else {
+            htmlContentArea.innerHTML = `
+                <strong><u>Khasi word:</u></strong>
+                <br><br><em><p>=>Jingtip Kyllum:</i></p>
+                <p>=> Khlem ïoh jingbatai shaphang kane <b>"${word}"</b> ka Kyntien.</p></em>`;
+            exampleTextEl.innerText = `Khlem don Nongmuna na bynta kane "${word}" ka Kyntien.`;
+        }
+
+        defBox.classList.remove('hidden');
+        defBox.scrollTop = 0;
+        defBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+</script>
+</body>
+</html>
+
+
