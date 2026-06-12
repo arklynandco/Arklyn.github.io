@@ -1,1 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KB's Dictionary English sha Khasi</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Spinning Animation */
+        @keyframes spin-custom {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(720deg); }
+        }
+        /* Waving/Pulse Wave Animation */
+        @keyframes wave-pulse {
+            0% { transform: scale(0.95); opacity: 0.8; box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.5); }
+            70% { transform: scale(1); opacity: 1; box-shadow: 0 0 0 20px rgba(37, 99, 235, 0); }
+            100% { transform: scale(0.95); opacity: 0.8; box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
+        }
+        .loader-spin-border {
+            border-top-color: #2563eb;
+            animation: spin-custom 1s linear infinite;
+        }
+        .loader-wave-container {
+            animation: wave-pulse 1.5s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col font-sans relative pb-24">
 
+    <header class="bg-blue-600 text-white px-6 py-3 flex items-center justify-between shadow-md">
+        <div class="flex items-center gap-4">
+            <div class="w-10 h-10 rounded-full bg-blue-700 flex items-center justify-center text-xs font-bold shadow-inner shrink-0 overflow-hidden">
+                <img src="CompanyLogo.png" class="brand-logo object-cover w-full h-full" alt="Logo">
+            </div>
+            <h1 class="text-xl md:text-2xl font-bold tracking-wide">Arklyn.Studio</h1>
+        </div>
+    </header>
+
+    <nav class="bg-blue-500 text-white px-6 py-2 flex justify-between items-center text-sm font-medium shadow-sm">
+        <div class="flex gap-4">
+            <a href="DictionaryHome.html" class="hover:underline transition">Home</a>
+            <a href="#" class="hover:underline transition">Privacy</a>
+            <a href="#" class="hover:underline transition">Contact us</a>
+        </div>
+    </nav>
+
+    <main class="flex-1 max-w-3xl w-full mx-auto p-4 md:p-6 pb-10">
+        
+        <div class="text-center my-6">
+            <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">KB's</h2>
+            <p class="text-xl font-semibold text-slate-500 mt-1">Dictionary English sha Khasi</p>
+        </div>
+
+        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm max-w-2xl mx-auto">
+            <div class="flex flex-col sm:flex-row items-center gap-4">
+                <input type="text" id="wordInput" oninput="handleInputChange()" placeholder="Enter a word here..." class="w-full sm:flex-1 border-2 border-slate-200 rounded-xl p-4 text-base focus:outline-none focus:border-blue-600 font-medium transition bg-slate-50 focus:bg-white">
+                <button onclick="handleSearch()" class="w-full sm:w-auto shrink-0 bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-6 rounded-xl shadow-md cursor-pointer transition text-base tracking-wide whitespace-nowrap">
+                    Show Definition
+                </button>
+            </div>
+        </div>
+
+        <div id="adWrapperZone" class="max-w-2xl mx-auto mt-4">
+            <div id="midNativeAdContainer" class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm relative select-none">
+                <div class="absolute top-1 left-2 text-[8px] uppercase tracking-widest text-slate-400 font-bold">Native Advertisement</div>
+                <div class="flex items-center gap-4 pt-2">
+                    <div class="w-12 h-12 bg-slate-100 rounded-lg flex items-center justify-center shrink-0 text-slate-400">
+                        <i class="fa-solid fa-layer-group text-xl"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h4 class="text-sm font-bold text-slate-700 truncate">Smarter Offline Translators Plus</h4>
+                        <p class="text-xs text-slate-400 truncate">Download clean premium diction packages for localized learning.</p>
+                    </div>
+                    <a href="#" class="bg-slate-100 hover:bg-blue-50 hover:text-blue-600 transition text-slate-600 text-xs font-bold px-3 py-2 rounded-lg whitespace-nowrap">Install</a>
+                </div>
+            </div>
+        </div>
+
+        <div id="searchLoader" class="hidden my-6 flex flex-col items-center justify-center gap-4">
+            <div class="relative w-24 h-24 flex items-center justify-center">
+                <div class="loader-wave-container absolute inset-0 bg-blue-100 rounded-full"></div>
+                <div class="loader-spin-border absolute inset-0 border-4 border-slate-200 rounded-full"></div>
+                <div class="relative z-10 w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center text-white font-black text-xl shadow-md">
+                    KB
+                </div>
+            </div>
+            <p class="text-sm font-bold text-blue-600 tracking-wider uppercase animate-pulse">Searching Dictionary...</p>
+        </div>
+
+        <div id="definitionBox" class="hidden mt-4 bg-white border border-slate-200 rounded-2xl p-6 shadow-md max-w-xl mx-auto relative overflow-hidden max-h-[400px] overflow-y-auto">
+            <div id="watermark" class="absolute inset-0 flex items-center justify-center text-[80px] md:text-[120px] font-black text-slate-500 opacity-[0.08] pointer-events-none select-none rotate-[-20deg] z-0">
+                KB
+            </div>
+            
+            <h3 class="text-xs font-bold text-slate-400 tracking-wider uppercase mb-3">Result:</h3>
+            <div id="htmlContentArea" class="relative z-10 text-slate-800 leading-relaxed text-base"></div>
+            
+            <div id="exampleContent" class="relative z-10 mt-4 pt-4 border-t border-slate-100 space-y-4">
+                <div>
+                    <h3 class="text-xs font-bold text-slate-400 tracking-wider uppercase mb-1">Example:</h3>
+                    <p id="exampleText" class="text-slate-700 italic font-medium text-base leading-relaxed bg-slate-50 p-3 rounded-xl border border-slate-100"></p>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <div id="popupModal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl border border-slate-100 transform transition-all scale-100">
+            <h4 id="popupTitle" class="text-xl font-bold text-slate-900 mb-2">Jingtip</h4>
+            <p id="popupMessage" class="text-sm md:text-base text-slate-700 mb-2 leading-relaxed">Dynamic response messaging.</p>
+            <div id="popupActions" class="flex justify-end gap-2.5"></div>
+        </div>
+    </div>
+
+    <div id="bottomBannerAd" class="fixed bottom-0 left-0 right-0 h-[60px] bg-slate-200 border-t border-slate-300 flex items-center justify-center z-40 shadow-inner select-none">
+        <div class="absolute top-1 left-2 text-[9px] uppercase tracking-widest text-slate-400 font-bold">Advertisement</div>
+        <div class="text-xs font-semibold text-slate-500 flex items-center gap-2">
+            <i class="fa-solid fa-rectangle-ad text-lg text-slate-400"></i>
+            <span>Banner Ad: 728x90 Placement Holder — Support Apps</span>
+        </div>
+    </div>
+
+<script>
+    const localDictionary = {
+  
+"a": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> U; Ka; Uwei; Kawei;  Shi.<br>U dak pule alphabet u ba nyngkong napdeng ki alphabet phareng.</em>`,
+"aardvark": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> U kynja mrad uba bam dkhiew.</em>`,
+"aback": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adverb:</i></b></p><p>=> Kyndit; Kyndit kynsan; Shadien.</em>`,
+"abacus": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka tiar baju pyndonkam ban kheiñ jingkheiñ.</em>`,
+"abaft": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka bynta ba shadien eh jong ka jhad.</em>`,
+"abandon": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Iehnoh; Kyntait noh; Ïehnoh ïa kaei kaei shaei shaei.</em>`,
+"abandoned": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Bala iehnoh; Bala kyntait; Bala shah iehnoh.</em>`,
+"abase": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Pynrit; Pynhapoh; Pynhiar.</em>`,
+"abash": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Pynlehraiñ.</em>`,
+"abate": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Rungjubor; Thom daka bor; Pynduh.</em>`,
+"abatement": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingthom daka bor; ka jingpynduh; Ka jingrung jubor.</em>`,
+"abattoir": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jaka ne ka ïing pynïap briew; Ka jaka pynïap ïa ki mrad na bynta ka doh.</em>`,
+"abba": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> U Blei u Kpa haka ktien Hebru.</em>`,
+"abbe": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> U lyngdoh; U pastor.</em>`,
+"abbess": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka lyngdoh rangbah duh jong ki riewniam pukir.</em>`,
+"abbey": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jaka shong ki lyngdoh.</em>`,
+"abbot": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> U lyngdoh ba ha khlieh duh; U lyngdoh ba rangbah duh.</em>`,
+"abbreviate": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Pynlyngkot; Thoh lyngkot; Ba thoh shiteng dak.</em>`,
+"abbreviation": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingthoh lyngkot ïa ki dak.</em>`,
+"abdicate": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Iehnoh ïaka khet ne kyrdan ba ju bat man ka por.</em>`,
+"abdicate responsibilities": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingiehnoh ban kitkhlieh ïa kano kano ka kam.</em></p>`,
+"abdication": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingïehnoh ïa ka kyrdan ne ka khet kum ki nongpynïaid ne nong bahkhlieh ïa kano kano ka kam.; Ka jinghiar khet.</em></p>`,
+"abdomen": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka kpoh</em>`,
+"abdominal": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Ba dei shaphang ka kpoh.</em></p>`,
+"abduct": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Rahbor.</em>`,
+"abduction": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingrahbor daka lynti ka bymdei.</em>`,
+"abductor": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> U nongrahbor ba da ka lynti kaba bakla.</em>`,
+"abed": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adverb:</i></b></p><p>=> Halor jingthiah.</em>`,
+"abel": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> U khun jong u Adam.</em>`,
+"aberrate": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Ïaid bakla; Ïaid ne im haka lynti ka bymdei.</em>`,
+"aberration": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingïaid bakla naka lynti kaba bha.</em>`,
+"abet": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Perb:</i></b></p><p>=> Pynshit ne Pynshlur ban leh ïa kano kano ka kam ba sniew; Pynshlur ban leh kam sniew; Pynshoi haki kam ba sniew.</em>`,
+"abetting": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingïarap ïano ïano ban leh kam sniew.</em></p>`,
+"abetted": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Bala ïarap ban leh kam sniew; Ba pynshit ban leh kam sniew.</em></p>`,
+"abeyance": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingpynjlan; Ka jingpyntud; Ka jingpynslem ïaka por Ka jingpynsangeh shipor.</em>`,
+"abhor": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Isih.</em>`,
+"abhorrence": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingisih; Ka jingijli.</em>`,
+"abhorring": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Isih; Ijli.</em></p>`,
+"abhorred": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Ba la isih bad ijli; Ba isih; Ba ijli.</em></p>`,
+"abhorrent": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Ba isih ne ijli; Badei shaphang ka jingisih.</em>`,
+"abide": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Ban isih bha ïano ïano ne ïa kaei re kaei; Shong; Sah; Bteng.</em>`,
+"abiding": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Ba isih bha ïa kaei re kaei; Ba bteng; Ba shong ne ba sah.</em>`,
+"ability": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jinglah.</em><br><em><p><b><i> Verb:</i></b></p><p>=> Lah.</em><br><em><p><b><i> Adjective:</i></b></p><p>=> Balah.</em>`,
+"abilities": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka bor pyrkhat jong ka jinglah ban leh eiei; Ka jinglah.</em>`,
+"abject": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Ba hapoh; Ba sngewrit; Ba rit mynsiem.</em>`,
+"abjectness": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jinglong bahapoh; Kaba hapoh; Ka jingsngewrit; Ka jingrit mynsiem.</em>`,
+"abjure": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Tim; Kñia; Kren byrtong; Kren khñium.</em>`,
+"ablaze": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Ba meh buh ne mih kynsan buh; Ba meh kynsan ir; Ba shit ne ing kynsan.</em>`,
+"able": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Balah.</em>`,
+"ably": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Ba tbit; Ba stad.</em>`,
+"ablush": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Ba la sawkyrang; Ba lehraiñ.</em>`,
+"ablution": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingpynsum ïaka metïap; Ka jingpynsait ne pynñiat um ïaka metïap.</em>`,
+"able bodies": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jinglah lut baroh kumba kiwei ki briew ki don ne lah.</em></p>`,
+"abnegate": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jinglen lade; Ka jingkheiñduh.</em>`,
+"abnormal": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Balong duna haka jingmut jingpyrkhat; Ba kum u biej; Bym biang haka jingmut jingpyrkhat; Bym long kumba julong lem kiwei.</em>`,
+"abnormality": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingbym bit bym biang ha ka met ka phad.</em></p>`,
+"abnormally": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adverb:</i></b></p><p>=> Da ka bymïadei; Ha kaba pher na kaba ju long barabor.</em></p>`,
+"aboard": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adverb:</i></b></p><p>=> Halor ka lieng ne ka jhad; Halor ka rel ne eropleiñ ne ha ka bus.</em>`,
+"abode": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jaka shong jaka sah; Ka ïing.</em>`,
+"abolish": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Pynduh ïa ka aiñ ne ïa kaei kaei.</em>`,
+"abolition": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingpynduh noh ïa kaaiñ ne kino kino ki rai.</em>`,
+"abom": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> U tiar pynbthei; Uei uei uba lah ban pynbthei.</em>`,
+"abominable": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Badei shaphang ka jingisih; Ba isih; Ba dei shaphang ka jingijli; Ba ijli.</em>`,
+"abominably": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adverb:</i></b></p><p>=> Haka rukom long ba isih ban peit.</em></p>`,
+"abomination": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingisih; Ka jingijli.</em>`,
+"aboriginal": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Ba hyndai kulong kumah; Bala slem slem bah; Ba don jingïadei shaphang ka tynrai shaphang ki briew ba im ha Australia.</em>`,
+"aboriginal person": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> U nongshong shnong ba nyngkong.</em></p>`,
+"aborigines": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ki nongshong shnong kiba nyngkong eh.</em>`,
+"abort": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Pynhap khun; Kha ne Hap lor; Sangeh ban leh ne trei ha shuwa ban dep ka kam.</em>`,
+"abortion": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingpynhap khun; Ka jingkha lor.</em>`,
+"abortive": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Bym seisoh; Ba pulom; Bym longkam.</em>`,
+"abo system": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka rukom ba phiah ïa ka snam ha ki saw bynta , kata A,B,AB bad O.</em></p>`,
+"abound": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Pahuh; Kynrei; Jyllei; Bun.</em>`,
+"about": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka kyntien bala pyndonkam haka ban ïa pyrkhat bad ai jingmut.</em><br><em><p><b><i> Preposition:</i></b></p><p>=> Sawdong; Shaphang.</em><br><em><p><b><i> Adverb:</i></b></p><p>=> Lajan; Shane shatai.</em>`,
+"above": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adverb:</i></b></p><p>=> Halor; Hajrong; Hangne; Halor kiei kiei.</em>`,
+"above board": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adverb:</i></b></p><p>=> Halor baroh; Ha lor kiei kiei baroh.</em></p>`,
+"abracadabra": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka ktien ba pyndonkam haka por ba kñia.</em>`,
+"abrade": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Kyrshut; Pyndam; Khoh snep.</em>`,
+"abrasion": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingpyndam noh; Ka jingkyrshut; Ks jingkhoh snep.</em>`,
+"abrasive": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingkhoh snep; Ka jingbym sngewtynnat; Ka jingpyndam noh; Ka jingkyrshut.</em>`,
+"abreast": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adverb:</i></b></p><p>=> Marsyndah; Markhap; Marjan.</em>`,
+"abridge": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Pynlyngkot; Pynduna rynïeng.</em>`,
+"abridged": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Ba la pynlyngkot.</em></p>`,
+"abridgement": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingpynlyngkot.</em>`,
+"abroad": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adverb:</i></b></p><p>=> Shabar ri; Sha shiliang duriaw.</em>`,
+"abrogate": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Pynduh pyndam.</em>`,
+"abrogation": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingpynduh; Ka jingpyndam.</em>`,
+"abrupt": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adverb:</i></b></p><p>=> Kynsan kynsan; Kyndit kyndit; Shi khyllipmat.</em>`,
+"abrupt": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Ba kynsan kynsan; Ba ha ka shikyllipmat.</em></p>`,
+"abruptly": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adverb:</i></b></p><p>=> Kynsan kynsan; Shi khyllipmat.</em>`,
+"abscess": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingpun ksuid; U thung; U tohjaw.</em>`,
+"abscond": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p>=> Phet tuh; Phet rieh; Phet noh.</em><br><em><p><b><i> Noun:</i></b></p><p>=> Ka jingphet tuh; Ka jingphet rieh.</em></p>`,
+"absence": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingjah; Ka jingpep; Ka jingbym poi ne don lang.</em>`,
+"absent": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Jah; Pep.</em>`,
+"absentee": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Uba pep; Uba jah; U bym don lang.</em>`,
+"absenteeism": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingpep skul ne pep trei barabor.</em></p>`,
+"absently": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adverb:</i></b></p><p>=> Da kaba jah ne pep khlem pynleit jingmut ha kaei kaba leh.</em></p>`,
+"absentminded": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Ba klet biej; Bym don jingmut.</em>`,
+"absentmindedly": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adverb:</i></b></p><p>=> Da ka jingklet biej.</em></p>`,
+"absentmindedness": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jinglong klet biej; Ka jingbym kynmaw.</em></p>`,
+"absolute": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Ba tikna; Ba pura; Banylla; Bymlah ban ïa nujor; Ba shisha.</em>`,
+"absolutely": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adverb:</i></b></p><p>=> Shisha; Tikna.</em>`,
+"absolute zero": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingpyrkhat ba ymdon eiei.</em></p>`,
+"absolution": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingmab pop; Ka jingbym buhnud ïaka jingbakla.</em>`,
+"absolve": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingmab pop.</em></p><br><em><p><b><i> Verb:</i></b></p><p>=> Mab; Pyllait.</em>`,
+"absorb": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Kjit; Nguid; Tan.</em>`,
+"absorbed": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Bala kjit ne nguid; Ba la tan.</em></p>`,
+"absorption": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingpynleit jingmut; Ka jingnguid ne kjit.</em>`,
+"absorbent": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Ba kjit ïa ka kynja um; Ba dei ïa u kynja spoiñ ne jaiñ ba kjit um.</em></p>`,
+"absorbency": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingkjit ïa ki kynja balong um.</em></p>`,
+"absorbing": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Ba sngewtynnad bha; Ba pynleit jingmut bha.</em></p>`,
+"abstain": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Kiar; Kyndiah; Kyntait.</em>`,
+"abstention": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingkyndiah; Ka jingkiar.</em>`,
+"abstiment": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Ba kiar na ka jingleh sngewbha.</em>`,
+"abstemious": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Ba tyngkai haka bam ka dih; Ba leh phikir bha ïa ka bam ka dih.</em>`,
+"abstinence": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Ba kiar na ka jingleh sngewbha.</em></p>`,
+"abstract": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Kaei kaei ka bym lah ban ktah daka kti.</em></p><br><em><p><b><i> Verb:</i></b></p><p>=> Khate; Kjit; Ring; Shim noh.</em>`,
+"abstracted": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Bym pynleit jingmut; Ba thylli ka jingmut jingpyrkhat; Ba biej.</em>`,
+"abstruse": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Ba long sharieh; Ba eh ban sngewthuh bha.</em>`,
+"absurd": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Ba khyllah; Bym lah long; Ba phylla.</em>`,
+"absurdity": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jinglong ba khyllah.</em>`,
+"absurdly": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adverb:</i></b></p><p>=> Da ka bym lah long; Da kaba phylla.</em></p>`,
+"abundance": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingpahuh pahai; Ka jingbun.</em>`,
+"abundant": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Ba pahuh; Ba don byllai.</em>`,
+"abundantly": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adverb:</i></b></p><p>=> Da ka jingpahuh; Haba don byllai.</em></p>`,
+"abuse": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Mai; Leh beiñ; Tim; Pyndonkam bakla.</em>`,
+"abuser": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> U nongleh beiñ; U nongpynsalia.</em></p>`,
+"abusive": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Ba mai ne tim kulmar khlem da pyrkhat; Ba leh ne kren bakla khlem da pyrkhat.</em>`,
+"abut": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Pynpar narud narud; Dem shaniah ha kiwei pat.</em>`,
+"abysmal": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Ba khlem trai; Bym lah ban thew; ba jylliew; Ba sniew ka rukom leh ne trei.</em>`,
+"abysmally": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adverb:</i></b></p><p>=> Da sniew shisha haka kam ne jingleh.</em></p>`,
+"abyss": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka liewlong ba khlem trai; Ka ahor.</em>`,
+"abyssal": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Ba shatrai duh; Ba ha trai ka duriaw.</em></p>`,
+"ac": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka ktien lyngkot jong Account bad Alternating Current.</em></p>`,
+"acacia": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> U diangshiah.</em>`,
+"academia": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ki kynhun ne ki briew ki ba ïadei bad ka jingpule.</em></p>`,
+"academy": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka skul ha ka ba ju ai shibun ki jaid jinghikai ne jingïalehkai ba kyrpang.</em>`,
+"academic": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Ba dei shaphang ka jaka ba ai jinghikai ne ki jingïalehkai ba kyrpang.</em>`,
+"academically": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adverb:</i></b></p><p>=> Ha ba ïadei bad ka pule puthi.</em></p>`,
+"accede": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Kohnguh; Mynjur; Shah; Ai.</em>`,
+"accelerate": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Pynkloi; Pynsted.</em>`,
+"accelerative": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Ba kloi; Ba pynsted.</em>`,
+"acceleration": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingïaleh ban pynsted ne pynkloi.</em>`,
+"accelerator": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka bynta jong ka kali ha kaba u nongñiah u ïuh da ka kjat bad pynsted ïa ka kali.</em></p>`,
+"accent": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingban ktien; Ka sur kynnoh ïa ka ktien hala ki jong ki jong ki jaka bapher bapher.</em><br><em><p><b><i> Verb:</i></b></p><p>=> Ban ktien.</em>`,
+"accentuate": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Leh eiei kaba longithuh ha khmat kiwei.</em></p>`,
+"accept": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Pdiang; Kohnguh; Mynjur.</em>`,
+"acceptable": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Balah ban pdiang; Balah ban kohnguh.</em>`,
+"acceptance": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingkohnguh; Ka jingpdiang.</em>`,
+"access": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka lad; Ka lynti.</em>`,
+"accessible": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jinglah ban poi; Ka jingshlur ha kano kano ka lynti.</em>`,
+"accession": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingkiew; Ka jingroi; Ka jingnangïar.</em>`,
+"accessory": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ba pyndap; Ba pynroi.</em>`,
+"access provider": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka kompani kaba ailad ne shah ban pyndonkam ïaka internet.</em></p>`,
+"accident": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingjia ba ryngkhat; Ka jingjia ba khlem poi pyrkhat.</em>`,
+"accidental": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingjia kaba kynsan kynsan.</em>`,
+"accidentally": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adverb:</i></b></p><p>=> Da ka jingbym poi pyrkhat; Ha kaba kyndit kyndit.</em></p>`,
+"accident prone": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Ba ju ngat ne kynduh ïa ki jingjia ba khlem poi pyrkhat man ka por.</em></p>`,
+"acclaim": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Risa kmen; Kynhoi; Pdiang sngewbha daka jingkmen.</em>`,
+"acclaimed": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Ba ïaroh ne pdiang sngewbha daka jingkmen da bun ki briew</em></p>`,
+"acclimate": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Pynïadei ïalade ha kano kano ka bynta jongka jingim.</em>`,
+"acclimatize": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Pynïadei ïalade bad ka jinglong ka mariang na kawei ka jaka sha kawei pat.</em>`,
+"acclimatization": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingpynïadei ïalade bad ka jinglong ka mariang la ka dei ha kano kano ka jaka ruh.</em></p>`,
+"acclivity": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> U thiep; Ka jingkiew artet; Ka jingkiew padun.</em>`,
+"accolade": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingleh eiei ban ïoh burom, ban ïoh jingïaroh.</em>`,
+"accommodate": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Pynbiang; Ai jaka.</em>`,
+"accommodating": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Ba kloi ban  ai ne pynbiang na bynta ki briew.</em></p>`,
+"accommodation": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> :</i></b></p><p>=> Ka jingpynbiang; Ka jingai jaka.</em>`,
+"accompaniment": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingsngewtynnat bad bam ne dih ryngkat bad kiwei pat ki jait jingbam; Ka jingdon ryngkat lang.</em></p>`,
+"accompany": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Bud; Synran; Donlang.</em>`,
+"accomplice": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> U paralok ba ïaleh kam bymman; ba ïasylla lang ban leh kam sniew.</em>`,
+"accompaniment": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Nou:</i></b></p><p>=> Ka jingïadon lang; Ka jingsynran; Ka jingbud.</em>`,
+"accomplish": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Pynurlong; Pyndep.</em>`,
+"accomplishment": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingpyndep; Ka jingpynurlong.</em>`,
+"accord": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Mynjur; Ïaishah.</em>`,
+"accordance": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingmynjur; Ka jingïaishah.</em>`,
+"according": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adverb:</i></b></p><p>=> Katkum. Katkum bala pynbeit.</em>`,
+"accordingly": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adverb:</i></b></p><p>=> Da kaba beit ba ryntih.</em>`,
+"accordion": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p>=> Ka jingtem ba daka ba pyrsad lyer ka pynmih ïa ka sur.</em>`,
+"accost": `<p><strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Ïakren; Ïalur ïaka dakaid.</em>`,
+"account": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Kheiñ; Pynshongdor; Ïathuh; Ai daw.</em>`,
+"accountant": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> U stad haka kheiñ ka diah; U nongbuh jingkheiñ ïa ka jingïoh jinglut.</em>`,
+"accounting": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingthmu; Ka jingkheiñ ka jingdiah.</em>>`,
+"accredited": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Ba don ka bor ban leh ïa kaei kaei; Bala pynkup bor; Ba la shaniah.</em>`,
+"accrue": `<p><strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> roi; mih.</em>`,
+"accumulate": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Lum; Pynlang.</em>`,
+"accumulation": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingpynlang; Ka jinglum.</em>`,
+"accuracy": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingtikna; Ka jingbeit.</em>`,
+"accurate": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Ba beit; Ba tikna.</em>`,
+"accursed": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Bala tim.</em>`,
+"accuse": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Mudui; Tian bishar; Shah kynnoh; Shah kem; Kynnoh."</em>`,
+"accusation": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingshah kynnoh; Ka jingshah mudui.</em>`,
+"accused": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Bala shah kynnoh; Bala shah kem.</em>`,
+"accustom": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Pynmlien.</em>`,
+"ace": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> U dak A ne eka haka kot khalai; U nongïalehkai ba tbit.</em>`,
+"acerbity": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingkthang; Ka jingbyrngiang; Ka jingehrang.</em></p>`,
+"ache": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingpang; Ka jingktha.</em></p>`,
+"achene": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ki soh barit badon tang uwei u shyieng.</em></p>`,
+"achieve": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Jop; Lah; Pyndep; Punurlong.</em></p>`,
+"achievement": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jinglah ne ka jingjop ïaka thong; Ka jingurlong.</em></p>`,
+"acid": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka asid.</em></p><br><em><p><b><i> Adjective:</i></b></p><p>=> Ba long kthang; Bajew.</em></p>`,
+"acidity": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Kaei kaei kaba long kthang longjew ne long asid.</em></p>`,
+"acknowledge": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Pyntikna; Pyntip; Ithuh.</em></p>`,
+"acknowledgement": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingpyntikna; Ka jingtip; Ka jingithuh.</em></p>`,
+"acme": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> ka jingjngai; ka kliar duh.</em></p>`,
+"acne": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> u khñiang jingpang haka sniehdoh uba ki samla ki ju don.</em></p>`,
+"acolyte": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> U nongshakri duwan.</em></p>`,
+"acorn": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> U soh ot; U sohsning; U symbai diengsning."</em></p>`,
+"acoustic": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Badei shaphang ka jingïohsngew ne ka jingsawa.</em></p>`,
+"acoustics": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ki jingsawa ne jingïohsngew.</em></p>`,
+"acoustics": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka rukom sawa jong ka sur jingsawa</em></p>`,
+"acquaint": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Pynithuh ithaw; Pyntip; Pynïadei paralok."</em></p>`,
+"acquaintance": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> U paralok ba shu ïa ithuh ithaw khlem da tip bha pat shaphang jong u.</em></p>`,
+"acquainted": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Ba la ïa kynduh bad ithuh hynrei ym bala ïa ithuh bha pat.</em></p>`,
+"acquiesce": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Ïa mynjur; Ïahap jingmut.</em></p>`,
+"acquiescence": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingïamynjur.</em></p>`,
+"acquire": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Kamai daka jingtrei shitom; Ïoh daka jingtrei shitom; Shim; Ioh.</em></p>`,
+"acquisition": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingïoh ïa kaei kaei da kaba thied; Ka jingïoh ne ka jingsngewthuh.</em></p>`,
+"acquisitive": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingkwah rhah; Ka jingkwah ban ïoh lut halade ïa kaei kaei.</em></p>`,
+"acquit": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Pynksan; Pyllait.</em></p>`,
+"acquitting": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingpynksan sha lade; Ka jingpyllait.</em></p>`,
+"acquitted": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Ba la pyllait; Ba pynksan.</em></p>`,
+"acquittal": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingpynlait luid; Ka jingshim bynta ha kino kino ki kam.</em></p>`,
+"acquittance roll": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka kot ba buh jingthoh ïa ka tulop jong ki nongtrei.</em></p>`,
+"acre": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingthew ïaka jingheh ka jaka kaba dei 4047 meter sawdong.</em></p>`,
+"acrid": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Ba kthang; Bakhor.</em></p>`,
+"acrimony": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingkthang jong ka jingkren ne jingsngew.</em></p>`,
+"acrimonious": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Ba sngewbitar bad ba sngewsih.</em></p>`,
+"acrimony": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingbitar bad ka jingbymsuk hapdeng arngut ki briew.</em></p>`,
+"acro": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adverb:</i></b></p><p>=> Ha kliar duh; Ha tmier; Ha bakut duh.</em></p>`,
+"acrobat": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> U nongpynbyrngia da kiba bun ki rukom leh ki jong u.</em></p>`,
+"acrobatic": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Ba pynbyrngia da ki rukom leh bapher bapher na bynta ïa ki nongpeit.</em></p>`,
+"acrobatics": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ki jingleh bad jingak jong ki nonglehkai pynbyrngia.</em></p>`,
+"acronym": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka kyntien lyngkot ba ai kyrteng ïa kiei kiei.</em></p>`,
+"acrophobia": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingsheptieng haba don ha tmier riat ne ha kano kano ka jaka kaba kynjang.</em></p>`,
+"across": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adverb:</i></b></p><p>=> Na shiliang sha shiliang; Baroh.</em></p>`,
+"act": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka kam; Ka jingleh; Ka aiñ.</em></p><br><em><p><b><i> Verb:</i></b></p><p>=> Leh; Trei; Ak.</em></p>`,
+"acting": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Ba shu shim ne ak shipor ha ka jaka uwei pat; Ba ak.</em></p>`,
+"action": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><b><i> Noun:</i></b></p><p>=> Ka jingleh; Ka jingak; Ka jingtrei.</em></p>`,
+"action packed": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Ba dei ïa ka thup jong ka jingleh ne jingtrei.</em></p>`,
+"action replay": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjextive:</i></b></p><p>=> Ba leh ne ak biang bun bun sien ïa kajuh.</em></p>`,
+"activate": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Sdang ban trei kam.</em></p>`,
+"active": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Kaei kaei ka jingleh ban sngewtynnat.</em></p>`,
+"active immunity": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingtrei kam hi ka met ban ïada na ka jingpang.</em></p>`,
+"actively": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adverb:</i></b></p><p>=> Da ka ba pynshlur ne pynbor ban leh eiei.</em></p>`,
+"active transport": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingïaid lyngba jong kiei kiei na ka jaka ba tlot ka bor met sha ka jaka ba khlaiñ ka bor met.</em></p>`,
+"activist": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> U nongïaleh ban wanrah jingkylla ha ka imlang sahlang na haka synshar khadar.</em></p>`,
+"activism": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingpyrshang ban pynkylla haka imlang sahlang ne haka synshar khadar.</em></p>`,
+"activity": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adverb:</i></b></p><p>=> Kaei kaei kaba jingleh na nam ka jingsngewtynnat ne jingkmen; Ka jingleh.</em></p>`,
+"actor": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> U tyngshop.</em></p>`,
+"actress": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka puron.</em></p>`,
+"actual": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Ba dei shisha.</em></p>`,
+"actuality": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jinglong ba shisha.</em></p>`,
+"actually": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adverb:</i></b></p><p>=> Da shisha.</em></p>`,
+"actuate": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Pyntrei kam; Pynshlur ban leh.</em></p>`,
+"acumen": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingneh jingmut; Ka jingsngewthuh kloi ïa kaei kaei.<br> Ka jinglan ban bishar bad rai ïa kaba bha.</em></p>`,
+"acupuncture": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingsumar ïaka jingpang ne jingshitom da ka ba shu dung da ki kynja thyrnia ba neh ha ki bynta bapher jong ka met.</em></p>`,
+"acute": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Ba don buit; Ba nep; Ba tyrsuh; Ba kynsan.</em></p>`,
+"acutely": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adverb:</i></b></p><p>=> Da shim khia bha.</em></p>`,
+"ad": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> AD kamut ba dei hadien ka jingwan jong u Khrist.</em><br><em></p>`,
+"adage": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingsneng; Ka ktien tymmen.</em></p>`,
+"adagio": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> I dkhot ne bynta jong ka sur jingrwai.</em></p>`,
+"adamant": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingeh dohnud; Ka jingdukhi; U mawleiñ.</em></p><br><em><p><b><i> Adjective:</i></b></p><p>=> Ba eh dohnud; Ba dukhi.</em></p>`,
+"admantly": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adverb:</i></b></p><p>=> Da pyneh dohnud shisha; Da ka jingeh dohnud.</em></p>`,
+"adam's apple": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingat u ba khih sharum shaneng ha ryngdang u briew haba u kren.</em></p>`,
+"adapt": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Pynïahap; Pynïadei.</em></p>`,
+"adapted": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Ba la ïadei ne ïahap.</em></p>`,
+"adaptable": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Ba lah ban pynïadei ne pynïahap ha kano kano ka bynta.</em></p>`,
+"adaptability": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jinglah ban pynïahap la ka long ha kano kano ka bynta ne jaka.</em></p>`,
+"adaptation": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingpynïahap; Ka jingpynïadei.</em></p>`,
+"adapter": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka tiar kaba lah ban pynïadei haba bteng lang ar ne bun tylli ki tiar elektrik ban pynbiang ïaka ding elektrik.</em></p>`,
+"adays": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adverb:</i></b></p><p>=> Mynta ki sngi; Ha kine ki por.</em></p>`,
+"add": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Kheiñlang; Pynlang; Adlang.</em></p>`,
+"addenda": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ki jingpyndap.</em></p>`,
+"addendum": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingpyndap.</em></p>`,
+"adder": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> U bseiñ rit ba long bih.</em></p>`,
+"addict": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingkyrni ha ka dih buaid na ha kiwei kiwei pat.</em></p>`,
+"addicted": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Ba la kyrni ha ka kyiad ne drok; Bala kyrni.</em></p>`,
+"addiction": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingkyrni.</em></p>`,
+"addictive": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Ba pynkwah; Ba kyrni.</em></p>`,
+"adding": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingpyndap ne ai shuh; Ka jingkheiñ ne buh lang biang.</em></p>`,
+"addition": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingkheiñ lang; Ka jingpynlang; Ka jingpynmih ne buh shuh.</em></p>`,
+"additional": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Ba adlang ha kaba la don lypa; Ba ïasnoh lang bad kaba ladon lypa.</em></p>`,
+"addition reaction": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingtreikam ne jong artylli ki kynja met ban pynlong tang kawei ka kynja met.</em></p>`,
+"additive": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka kynja dawai ne jingber bala ber ne khleh lang ha ka jingbam ban pynbang bad pynitynnat ne pynlong i-thymmai sah.</em></p>`,
+"add on": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> u tiar ba pyndait ne bteng biang ha ka kor kompiwtor na ka bynta ban kham ïoh pyndonkam kham bun.<br>Kaba ai ne shim shuh ban kham pahuh ban ïa kaba ladon lypa.</em></p>`,
+"addle": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Pynpyut</em></p>`,
+"address": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jaka shong; Ka jaka sah; Ka jingkren; Ka jingthew; Ka jingkhot.</em><br><em><p><b><i> Verb:</i></b></p><p>=> Kren; Thew; Khot.</em></p>`,
+"addressed": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Ba la khot; Ba la buh kyrteng ne jaka shong jaka sah.</em></p>`,
+"address book": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka kot ha kaba la buh jingthoh shaphang ka kyrteng bad ka jaka shong jaka sah.</em></p>`,
+"adduce": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Pynmih; Sei; Ring jingmut; Pynwandur.</em></p>`,
+"adducement": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingpynmih; Ka jingring jingmut; Ka jingpynwandur.</em></p>`,
+"adept": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Ba tbit; Ba stad bad ba tbit ban leh ne trei ïa kaei kaei kaba eh.</em></p>`,
+"adequate": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Ba ïadei; Ba biang.</em></p>`,
+"adequately": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adverb:</i></b></p><p>=> Da kaba biang ne ïadei.</em></p>`,
+"adequacy": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingbiang; Ka jingïadei.</em></p>`,
+"adhere": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Dambit; Snoh.</em></p>`,
+"adherence": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingdambit ne ka jingsnoh; Ka jingkohnguh bha ha ki aiñ.</em></p>`,
+"adherent": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> U ba snoh bad bud bha ïa ki aiñ.</em></p>`,
+"adhesive": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Ba dambit; Ba snoh; Ba ïasoh.</em><br><em><p><b><i> Noun:</i></b></p><p>=> Ka jingtah ban pynbit lang ïa kaei kaei.</em></p>`,
+"adhesion": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingïasoh; Ka jingjingdambit; Ka jingïasnoh.</em></p>`,
+"adieu": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> ka jingkhublei ïalad laka jong ka lynti.</em></p><br><em><p><b><i> Adverb:</i></b></p><p>=> Khublei.</em></p>`,
+"adipose": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Ba sngaid; Ba khleiñ.</em></p>`,
+"adit": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka lynti ban rung sha ka krem ne ka par ba hapoh khyndew.</em></p>`,
+"adjecent": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Ba ïakhap; Ba syndah; Ba marjan.</em></p>`,
+"adjacent angle": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka dong ba ïakhap ne ba ïadoh marjan.</em></p>`,
+"adjective": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka ktien kab batai ïaka jinglong jong ka noun ne jong ka pronoun.</em></p>`,
+"adjectival": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Ba batai bniah shaphang ka noun  bad shaphang ka pronoun.</em></p>`,
+"adjoin": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Pynïasoh</em></p>`,
+"adjoining": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingpynïasoh.</em></p>`,
+"adjourn": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Buh sngi pat; Pynwai; Pynkut.</em></p>`,
+"adjournment": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingpynkut; Ka jingpynwai; Ka jingpynsangeh shipor .</em></p>`,
+"adjudge": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Rai; Bishar.</em></p>`,
+"adjudicate": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Rai; Pynbeit; Bishar.</em></p>`,
+"adjudication": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingshong bishar; Ka jingpynbeit ne rai.</em></p>`,
+"adjudicator": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> U nongpynbeit; U nongbishar.</em></p>`,
+"adjunct": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> kaei kaei kaba la pynïasoh.</em></p><br><em><p><b><i> Verb:</i></b></p><p>=> Pynïasoh.</em></p><br><em><p><b><i> Adjective:</i></b></p><p>=> Bala pynïasoh.</em></p>`,
+"adjure": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Pynsmai</em></p>`,
+"adjuration": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingpynsmai.</em></p>`,
+"adjust": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Pynïahap; Pynïadei; Pynbeit.</em></p>`,
+"adjustable": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Ba lah ban pynïahap ne pynïadei.</em></p>`,
+"adjustment": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jinglah ban kylla bad ban pynïadei ne pynïahap ha kano kano ka bynta.</em></p>`,
+"adjutant": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> U rangbah shipai uba ïarap ïa uwei pat u rangbah shipai.</em></p>`,
+"adlib": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Ban ai jingkren shaphang kaei kaei khlem da mut ne pyrkhat lypa kaei ban kren.</em></p>`,
+"admin": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> U trai; U nongpynïaid.</em></p>`,
+"administer": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Pynïaid; Shakri.</em></p>`,
+"administration": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingpynïaid; Ka jingshakri.</em></p>`,
+"administrative": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Ba dei shaphang ka jingpynïaid.</em></p>`,
+"administrator": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> U nongpynïaid; U Shakri ïa ki paidbah.</em></p>`,
+"Admirable": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Ba bes; Ba pher; Ba phylla; Ba donburom.</em></p>`,
+"admirably": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adverb:</i></b></p><p>=> Da kaba burom; Da ka jingitynnat.</em></p>`,
+"admiral": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> U rangbah shipai duriaw.</em></p>`,
+"admiration": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingïap biej; Ka jingitynnad; Ka jingpeit ieid.</em></p>`,
+"admire": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Peit ieid; Ïap biej; Itynnad.</em></p>`,
+"admissible": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Ba la shah; Ba la pdiang.</em></p>`,
+"admission": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingpdiang; Ka jingshah ban rung.</em></p>`,
+"admit": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Pdiang; Kubur ba lah leh ïa kaei kaei.</em></p>`,
+"admittance": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingbit ban rung ha kano kano ka jaka.</em></p>`,
+"admitted": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Ba la mynjur; Ba la shah; Ba la pdiang ïala ka jingbakla.</em></p>`,
+"admittedly": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adverb:</i></b></p><p>=> Da ka jingpynbor ban pdiang ïaka jingleh bakla.</em></p>`,
+"admitting": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Pdiang; Shah; Pdiang ïala ka jingleh bakla.</em></p>`,
+"admix": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Khleh lang.</em></p>`,
+"admixture": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingkhleh lang.</em></p>`,
+"admonish": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Sneng; Mai.</em></p>`,
+"admonition": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingsneng; Ka jingmai.</em></p>`,
+"ado": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingshitom; Ka jingjynjar.</em></p>`,
+"adobe": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> U mawit bala thad sngi bha; Ka ïing bala shna da ki mawit.</em></p>`,
+"adolescence": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jing sdang ban khie samla.</em></p>`,
+"adolescent": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Badei ïaka por jong ka jingsdang khie samla; U ba la sdang khie samla.</em></p>`,
+"adopt": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Jied; Ting khun; Kam.</em></p>`,
+"adopted": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Ba la ting khun ïano ïano; Ba la ri ïa khun kiwei khlem da dei khun ba kha nalade.</em></p>`,
+"adoption": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingting khun; Ka jingjied; Ka jingkam."</em></p>`,
+"adorable": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Ba itynnat bad iskuiñ bha.</em></p>`,
+"adore": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Ñiewkor; Mane; Ibha eh.</em></p>`,
+"adoration": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingieid bad ka jingburom; Ka jingmane; Ka jingñiewkor.</em></p>`,
+"adorn": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Pynriam; Pynitynnad; Pynphuh pynphieng.</em></p>`,
+"adorned": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Bala pynriam bad pynitynnat bha.</em></p>`,
+"adornment": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingpynitynnad; Ka jingpynphuh; Ka jingpynriam.</em></p>`,
+"adown": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Noh ne hiar arsut; Khongpong.</em></p>`,
+"adrenal gland": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> U dkhot met uba ïarap ïa ka met u briew ban sngewthuh bad ban ïada na ka jingjia ba kynsan.</em></p>`,
+"adrenalin": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Kaei kaei kaba ka met jongngi ka pynmih haba ngi dom, kmen bad sheptieng kaba pynlong ïa u klongsnam ban tied stet.</em></p>`,
+"adread": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Tieng.</em></p>`,
+"adrift": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Ba per; Ba kylluid.</em></p>`,
+"adroit": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Ba tbit; Ba shalak.</em></p>`,
+"adsorb": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Sop da kaei kaei kaba stang bha ha kawei pat bynta.</em></p>`,
+"adsorbent": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Ba la sop umjer ne jynjaw ïa kaei kaei.</em></p>`,
+"adsorption": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingsop eiei ka jynja ba stang ha ki tiar ki kar; Ka jingsop umjer ne jynjaw.</em></p>`,
+"adulation": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingïaroh; Ka jingpynkhyllew.</em></p>`,
+"adult": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Adjective:</i></b></p><p>=> Bala heh; Bala ïaw; Bala rangbah.</em><br><em><p><b><i> Noun:</i></b></p><p>=> U ba lah heh la san.</em></p>`,
+"adulterate": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Verb:</i></b></p><p>=> Khleh; Pynjakhlia; Klim.</em></p>`,
+"adulteration": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingklim; Ka jingpynjakhlia.</em></p>`,
+"adultery": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka jingklim.</em></p>`,
+
+      
+};
+const secondaryExampleDatabase = {
+        "a": "I saw a bird layout tier node.",
+        "aardvark": "U aardvark u bam khap dkhiew lane niangshnong.",
+        "aback": "I was taken aback by the dynamic layout shift.",
+        "apple": "I like to eat a fresh apple in the lynter u lyiur.",
+        "book": "Pule ia kane ka kot ban nang bniah."
+    };
+
+    let cachedPendingQuery = "";
+    let currentSearchCount = 0;
+    let hasCheckedFirstAd = false; 
+
+    function showAlert(title, message, callback = null) {
+        document.getElementById('popupTitle').innerText = title;
+        document.getElementById('popupMessage').innerText = message;
+        const container = document.getElementById('popupActions');
+        container.innerHTML = '';
+
+        const btn = document.createElement('button');
+        btn.className = `px-4 py-2 text-sm font-bold rounded-xl cursor-pointer transition bg-blue-600 text-white hover:bg-blue-700`;
+        btn.innerText = 'OK';
+        btn.onclick = () => {
+            toggleModal(false);
+            if (callback) callback();
+        };
+        container.appendChild(btn);
+        toggleModal(true);
+    }
+
+    function askAdConsent(onYesCallback, onNoCallback) {
+        document.getElementById('popupTitle').innerText = "Pynthikna peit video";
+        document.getElementById('popupMessage').innerText = "Phi lah ban ai jingkyrshan lem ïa ngi da kaba phin peit video shwa khyndiat?.";
+        
+        const container = document.getElementById('popupActions');
+        container.innerHTML = '';
+
+        const noBtn = document.createElement('button');
+        noBtn.className = "px-4 py-2 text-sm font-bold rounded-xl cursor-pointer transition bg-slate-200 text-slate-700 hover:bg-slate-300";
+        noBtn.innerText = "Em";
+        noBtn.onclick = () => {
+            toggleModal(false);
+            onNoCallback();
+        };
+
+        const yesBtn = document.createElement('button');
+        yesBtn.className = "px-4 py-2 text-sm font-bold rounded-xl cursor-pointer transition bg-blue-600 text-white hover:bg-blue-700";
+        yesBtn.innerText = "Hooid";
+        yesBtn.onclick = () => {
+            toggleModal(false);
+            onYesCallback();
+        };
+
+        container.appendChild(noBtn);
+        container.appendChild(yesBtn);
+        toggleModal(true);
+    }
+
+    function showEnforcedAd(adTypeName, onCompleteCallback) {
+        const titleBadge = adTypeName === "Interstitial" ? "🎬 Interstitial Advertisement" : "🎁 Enforced Reward Advertisement";
+        document.getElementById('popupTitle').innerText = titleBadge;
+        document.getElementById('popupMessage').innerText = `Loading premium partner streaming data... Remaining: 5s.`;
+        
+        const container = document.getElementById('popupActions');
+        container.innerHTML = '';
+
+        const statusLabel = document.createElement('div');
+        statusLabel.className = "w-full text-center text-sm font-medium text-slate-400 py-2 animate-pulse";
+        statusLabel.innerText = `Displaying Ads ${adTypeName} (Required Placement)...`;
+        container.appendChild(statusLabel);
+        
+        toggleModal(true);
+
+        let timerLeft = 5;
+        const trackingInterval = setInterval(() => {
+            if (timerLeft > 0) {
+                document.getElementById('popupMessage').innerText = `Streaming secure promotional layout assets... Remaining: ${timerLeft}s.`;
+                timerLeft--;
+            } else {
+                clearInterval(trackingInterval);
+                toggleModal(false);
+                if (onCompleteCallback) onCompleteCallback();
+            }
+        }, 1000);
+    }
+
+    function toggleModal(show) {
+        const modal = document.getElementById('popupModal');
+        if (show) modal.classList.remove('hidden');
+        else modal.classList.add('hidden');
+    }
+
+    function handleInputChange() {
+        document.getElementById('definitionBox').classList.add('hidden');
+        // Re-display native elements if layout is edited
+        document.getElementById('adWrapperZone').classList.remove('hidden');
+        document.getElementById('midNativeAdContainer').classList.remove('hidden');
+    }
+
+    function handleSearch() {
+        const query = document.getElementById('wordInput').value.trim().toLowerCase();
+        if (!query) {
+            showAlert("Pynkynmaw!!!", "Sngewbha thoh ka kyntien pareng ba phi kwah.");
+            return;
+        }
+
+        cachedPendingQuery = query;
+        currentSearchCount++; 
+
+        const isInterstitialEnforced = (currentSearchCount >= 6 && (currentSearchCount - 6) % 12 === 0);
+        const isRewardedEnforced = (currentSearchCount >= 13 && (currentSearchCount - 13) % 10 === 0);
+
+        if (isInterstitialEnforced) {
+            showEnforcedAd("Interstitial", () => { triggerDelayedLookupSequence(); });
+            return;
+        }
+
+        if (isRewardedEnforced) {
+            showEnforcedAd("Rewarded", () => { triggerDelayedLookupSequence(); });
+            return;
+        }
+
+        if (!hasCheckedFirstAd) {
+            hasCheckedFirstAd = true; 
+            askAdConsent(
+                () => { showEnforcedAd("First Session Rewarded", () => { triggerDelayedLookupSequence(); }); },
+                () => { triggerDelayedLookupSequence(); }
+            );
+        } else {
+            triggerDelayedLookupSequence();
+        }
+    }
+
+    function triggerDelayedLookupSequence() {
+        document.getElementById('definitionBox').classList.add('hidden');
+        
+        const loader = document.getElementById('searchLoader');
+        loader.classList.remove('hidden');
+        loader.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+        setTimeout(() => {
+            loader.classList.add('hidden');
+            executeLookupSequence(cachedPendingQuery);
+        }, 1200);
+    }
+
+    function executeLookupSequence(word) {
+        /* Hides entire native container frame to collapse white space layout gaps completely */
+        document.getElementById('adWrapperZone').classList.add('hidden');
+        document.getElementById('midNativeAdContainer').classList.add('hidden');
+        
+        const defBox = document.getElementById('definitionBox');
+        const htmlContentArea = document.getElementById('htmlContentArea');
+        const exampleTextEl = document.getElementById('exampleText');
+        const watermark = document.getElementById('watermark');
+
+        const htmlResultString = localDictionary[word];
+        watermark.textContent = word.toUpperCase();
+
+        if (htmlResultString) {
+            htmlContentArea.innerHTML = htmlResultString;
+            exampleTextEl.innerText = secondaryExampleDatabase[word] || `Example sentence context output for standard term "${word}".`;
+        } else {
+            htmlContentArea.innerHTML = `
+                <strong><u>Khasi word:</u></strong>
+                <br><br><em><p>=>Jingtip Kyllum:</i></p>
+                <p>=> Khlem ïoh jingbatai shaphang kane <b>"${word}"</b> ka Kyntien.</p></em>`;
+            exampleTextEl.innerText = `Khlem don Nongmuna na bynta kane "${word}" ka Kyntien.`;
+        }
+
+        defBox.classList.remove('hidden');
+        defBox.scrollTop = 0;
+        defBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+</script>
+</body>
+</html>
