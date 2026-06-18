@@ -1,130 +1,204 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KB's Dictionary English sha Khasi</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Spinning Animation */
-        @keyframes spin-custom {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(720deg); }
-        }
-        /* Waving/Pulse Wave Animation */
-        @keyframes wave-pulse {
-            0% { transform: scale(0.95); opacity: 0.8; box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.5); }
-            70% { transform: scale(1); opacity: 1; box-shadow: 0 0 0 20px rgba(37, 99, 235, 0); }
-            100% { transform: scale(0.95); opacity: 0.8; box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
-        }
-        .loader-spin-border {
-            border-top-color: #2563eb;
-            animation: spin-custom 1s linear infinite;
-        }
-        .loader-wave-container {
-            animation: wave-pulse 1.5s ease-in-out infinite;
-        }
+        /* Base Reset */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: sans-serif; background-color: #f8fafc; color: #1e293b; min-height: 100vh; padding-bottom: 80px; }
+
+        /* Header & Nav */
+        header { background: #2563eb; color: white; padding: 10px 10px; display: flex; align-items: center; gap: 60px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .brand-box { width: 40px; height: 40px; border-radius: 50%; background: #1d4ed8; overflow: hidden; }
+        .brand-box img { width: 100%; height: 100%; object-fit: cover; }
+        nav { background: #3b8; padding: 7px 20px; display: flex; gap: 20px; }
+        nav a { color: white; text-decoration: none; font-size: 15px; font-weight: 900; }
+        nav a:hover { text-decoration: underline; }
+
+        /* Main */
+        main { max-width: 700px; margin: 15px auto; padding: 0 15px; }
+        .search-box { background: white; padding: 15px; border-radius: 30px; border: 2px solid #e2e8f0; display: flex; gap: 7px; }
+        input { flex: 1; padding: 8px; border: 5px solid #e2e8f0; border-radius: 15px; font-size: 14px; outline: none; }
+        input:focus { border-color: #2563eb; }
+        button { background: #2563eb; color: white; padding: 5px 15px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        button:hover { background: #1d4ed8; }
+
+        /* UI Elements */
+        .hidden { display: none !important; }
+        .card { background: white; border: 2px solid #e2e8f0; padding: 10px; border-radius: 15px; margin-top: 15px; }
+        .loader { text-align: center; margin: 20px 0; }
+        
+        /* Animations */
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        .spinner { border: 4px solid #e2e8f0; border-top: 4px solid #2563eb; border-radius: 50%; width: 40px; height: 40px; animation: spin 2s linear infinite; margin: 0 auto 10px; }
+
+        /* Modal */
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; padding: 60px; z-index: 100; }
+        .modal-content { background: white; padding: 20px; border-radius: 12px; width: 100%; max-width: 350px; }
+        
+        .result-card{
+    position:relative;
+    overflow:hidden;
+}
+
+/* Fixed KBA watermark */
+.kba-watermark{
+    position:absolute;
+    top:7px;
+    right:10px;
+    font-size:14px;
+    font-weight:bold;
+    color:rgba(37,99,235,0.25);
+    pointer-events:none;
+}
+
+/* Word watermark */
+.word-watermark{
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    font-size:60px;
+    font-weight:bold;
+    color:rgba(0,0,0,0.05);
+    white-space:nowrap;
+    pointer-events:none;
+    user-select:none;
+}
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col font-sans relative pb-24">
+<body>
 
-    <header class="bg-blue-600 text-white px-6 py-3 flex items-center justify-between shadow-md">
-        <div class="flex items-center gap-4">
-            <div class="w-10 h-10 rounded-full bg-blue-700 flex items-center justify-center text-xs font-bold shadow-inner shrink-0 overflow-hidden">
-                <img src="CompanyLogo.png" class="brand-logo object-cover w-full h-full" alt="Logo">
+<header>
+    <div class="brand-box"><img src="CompanyLogo.png" alt="Logo"></div>
+    <h1>Arklyn.Studio</h1>
+    <button onclick="shareApp()"
+style="
+margin-left:auto;
+background:white;
+color:#2563eb;
+padding:8px 12px;
+border-radius:20px;">
+📤
+</button>
+</header>
+
+<nav>
+    <a href="#">Home</a>
+    <a href="#">Privacy</a>
+    <a href="#">Contact us</a>
+</nav>
+
+<main>
+    <div style="text-align:center; margin-bottom: 15px; font-size: 22px">
+        <h2>KB's <br>Dictionary</h2>
+    </div>
+
+    <div class="search-box">
+<input type="text" id="wordInput"
+placeholder="Enter a word..."
+oninput="hideResults()"
+onkeypress="if(event.key==='Enter')handleSearch()">
+        <button onclick="handleSearch()">Search</button>
+    </div>
+
+    <div id="searchLoader" class="loader hidden">
+        <div class="spinner"></div>
+        <p>Searching...</p>
+    </div>
+    
+    <!-- Banner Ad Middle -->
+<div id="middleBannerAd" class="card" style="text-align:center; margin-top:20px;">
+    <!-- Replace with your AdSense code -->
+    <p>Banner Advertisement</p>
+</div>
+
+<!-- Result Card -->
+<div id="definitionBox" class="card hidden result-card">
+
+    <div class="kba-watermark">KBA</div>
+
+    <div id="wordWatermark" class="word-watermark">
+        WORD
+    </div>
+
+    <h3>Result:</h3>
+
+    <div id="htmlContentArea" style="margin-top:10px;"></div>
+
+    <div style="margin-top:15px;border-top:1px solid #eee;padding-top:10px;">
+        <p><strong>Example:</strong></p>
+        <p id="exampleText"
+           style="font-style:italic;color:#475569;">
+        </p>
+    </div>
+
+</div>
+
+<!-- Native Ad -->
+    <div id="nativeAdContainer"
+         class="hidden"
+         style="
+            margin-top:10px;
+            padding-top:10px;
+            border-top:5px solid #eee;">
+
+        <h4>Sponsored</h4>
+
+        <div style="display:flex;gap:10px;align-items:center;">
+            <img src="https://via.placeholder.com/80"
+                 alt="Ad"
+                 style="width:80px;height:40px;border-radius:8px;">
+
+            <div>
+                <h4>Advertisement Title</h4>
+                <p>Advertisement description appears here.</p>
+                <button>Install</button>
             </div>
-            <h1 class="text-xl md:text-2xl font-bold tracking-wide">Arklyn.Studio</h1>
         </div>
-    </header>
-
-    <nav class="bg-blue-500 text-white px-6 py-2 flex justify-between items-center text-sm font-medium shadow-sm">
-        <div class="flex gap-4">
-            <a href="DictionaryHome.html" class="hover:underline transition">Home</a>
-            <a href="#" class="hover:underline transition">Privacy</a>
-            <a href="#" class="hover:underline transition">Contact us</a>
-        </div>
-    </nav>
-
-    <main class="flex-1 max-w-3xl w-full mx-auto p-4 md:p-6 pb-10">
+    </div>
         
-        <div class="text-center my-6">
-            <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">KB's</h2>
-            <p class="text-xl font-semibold text-slate-500 mt-1">Dictionary English sha Khasi</p>
-        </div>
+</main>
 
-        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm max-w-2xl mx-auto">
-            <div class="flex flex-col sm:flex-row items-center gap-4">
-                <input type="text" id="wordInput" oninput="handleInputChange()" placeholder="Enter a word here..." class="w-full sm:flex-1 border-2 border-slate-200 rounded-xl p-4 text-base focus:outline-none focus:border-blue-600 font-medium transition bg-slate-50 focus:bg-white">
-                <button onclick="handleSearch()" class="w-full sm:w-auto shrink-0 bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-6 rounded-xl shadow-md cursor-pointer transition text-base tracking-wide whitespace-nowrap">
-                    Show Definition
-                </button>
-            </div>
-        </div>
-
-        <div id="adWrapperZone" class="max-w-2xl mx-auto mt-4">
-            <div id="midNativeAdContainer" class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm relative select-none">
-                <div class="absolute top-1 left-2 text-[8px] uppercase tracking-widest text-slate-400 font-bold">Native Advertisement</div>
-                <div class="flex items-center gap-4 pt-2">
-                    <div class="w-12 h-12 bg-slate-100 rounded-lg flex items-center justify-center shrink-0 text-slate-400">
-                        <i class="fa-solid fa-layer-group text-xl"></i>
-                    </div>
-                    <div class="flex-1 min-w-0">
-                        <h4 class="text-sm font-bold text-slate-700 truncate">Smarter Offline Translators Plus</h4>
-                        <p class="text-xs text-slate-400 truncate">Download clean premium diction packages for localized learning.</p>
-                    </div>
-                    <a href="#" class="bg-slate-100 hover:bg-blue-50 hover:text-blue-600 transition text-slate-600 text-xs font-bold px-3 py-2 rounded-lg whitespace-nowrap">Install</a>
-                </div>
-            </div>
-        </div>
-
-        <div id="searchLoader" class="hidden my-6 flex flex-col items-center justify-center gap-4">
-            <div class="relative w-24 h-24 flex items-center justify-center">
-                <div class="loader-wave-container absolute inset-0 bg-blue-100 rounded-full"></div>
-                <div class="loader-spin-border absolute inset-0 border-4 border-slate-200 rounded-full"></div>
-                <div class="relative z-10 w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center text-white font-black text-xl shadow-md">
-                    KB
-                </div>
-            </div>
-            <p class="text-sm font-bold text-blue-600 tracking-wider uppercase animate-pulse">Searching Dictionary...</p>
-        </div>
-
-        <div id="definitionBox" class="hidden mt-4 bg-white border border-slate-200 rounded-2xl p-6 shadow-md max-w-xl mx-auto relative overflow-hidden max-h-[400px] overflow-y-auto">
-            <div id="watermark" class="absolute inset-0 flex items-center justify-center text-[80px] md:text-[120px] font-black text-slate-500 opacity-[0.08] pointer-events-none select-none rotate-[-20deg] z-0">
-                KB
-            </div>
-            
-            <h3 class="text-xs font-bold text-slate-400 tracking-wider uppercase mb-3">Result:</h3>
-            <div id="htmlContentArea" class="relative z-10 text-slate-800 leading-relaxed text-base"></div>
-            
-            <div id="exampleContent" class="relative z-10 mt-4 pt-4 border-t border-slate-100 space-y-4">
-                <div>
-                    <h3 class="text-xs font-bold text-slate-400 tracking-wider uppercase mb-1">Example:</h3>
-                    <p id="exampleText" class="text-slate-700 italic font-medium text-base leading-relaxed bg-slate-50 p-3 rounded-xl border border-slate-100"></p>
-                </div>
-            </div>
-        </div>
-
-    </main>
-
-    <div id="popupModal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl border border-slate-100 transform transition-all scale-100">
-            <h4 id="popupTitle" class="text-xl font-bold text-slate-900 mb-2">Jingtip</h4>
-            <p id="popupMessage" class="text-sm md:text-base text-slate-700 mb-2 leading-relaxed">Dynamic response messaging.</p>
-            <div id="popupActions" class="flex justify-end gap-2.5"></div>
-        </div>
+<div id="popupModal" class="modal hidden">
+    <div class="modal-content">
+        <h4 id="popupTitle">Notice:</h4>
+        <p id="popupMessage" style="margin:10px 0;"></p>
+        <div id="popupActions" style="text-align:right;"></div>
     </div>
+</div>
 
-    <div id="bottomBannerAd" class="fixed bottom-0 left-0 right-0 h-[60px] bg-slate-200 border-t border-slate-300 flex items-center justify-center z-40 shadow-inner select-none">
-        <div class="absolute top-1 left-2 text-[9px] uppercase tracking-widest text-slate-400 font-bold">Advertisement</div>
-        <div class="text-xs font-semibold text-slate-500 flex items-center gap-2">
-            <i class="fa-solid fa-rectangle-ad text-lg text-slate-400"></i>
-            <span>Banner Ad: 728x90 Placement Holder — Support Apps</span>
-        </div>
-    </div>
+<!-- Bottom Banner -->
+<div id="bottomBannerAd"
+     style="
+        position:fixed;
+        bottom:0;
+        left:0;
+        width:100%;
+        background:white;
+        border-top:1px solid #ddd;
+        padding:10px;
+        text-align:center;
+        z-index:50;">
+    <!-- Replace with AdSense code -->
+    <strong>Bottom Banner Advertisement</strong>
+</div>
 
 <script>
-    const localDictionary = {
+  
+  window.addEventListener("online", () => {
+    console.log("Online");
+});
+
+window.addEventListener("offline", () => {
+    console.log("Offline");
+});
+  let searchCount = 0;
+let firstSearchRewardAsked = false;
+const localDictionary = {
   
 "a": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> U; Ka; Uwei; Kawei;  Shi.<br>U dak pule alphabet u ba nyngkong napdeng ki alphabet phareng.</em>`,
 "aardvark": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> U kynja mrad uba bam dkhiew.</em>`,
@@ -999,180 +1073,287 @@
 "anagram": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka ktien bala buh ïaki dak jong kawei pat ka ktien ban pynpher ïa ka jingkynnoh.</em></p>`,
 "anal": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> Ka thliew eit.</em></p>`,
       
-};
-const secondaryExampleDatabase = {
-        "a": "I saw a bird layout tier node.",
-        "aardvark": "U aardvark u bam khap dkhiew lane niangshnong.",
-        "aback": "I was taken aback by the dynamic layout shift.",
-        "apple": "I like to eat a fresh apple in the lynter u lyiur.",
-        "book": "Pule ia kane ka kot ban nang bniah."
+
+
     };
 
-    let cachedPendingQuery = "";
-    let currentSearchCount = 0;
-    let hasCheckedFirstAd = false; 
+    const secondaryExampleDatabase = {
+        "a": "I saw a bird layout tier node.",
+        "c": "u dak ba lai na pdeng ki alphabet."
+  };
+    
+    function showInterstitialAd() {
+    alert("Interstitial Ad Placeholder");
+   
+}
 
-    function showAlert(title, message, callback = null) {
-        document.getElementById('popupTitle').innerText = title;
-        document.getElementById('popupMessage').innerText = message;
-        const container = document.getElementById('popupActions');
-        container.innerHTML = '';
+function showRewardedAd(callback) {
+    const watched = confirm(
+        "Watch a rewarded ad to continue?"
+    );
 
-        const btn = document.createElement('button');
-        btn.className = `px-4 py-2 text-sm font-bold rounded-xl cursor-pointer transition bg-blue-600 text-white hover:bg-blue-700`;
-        btn.innerText = 'OK';
-        btn.onclick = () => {
-            toggleModal(false);
-            if (callback) callback();
-        };
-        container.appendChild(btn);
-        toggleModal(true);
-    }
-
-    function askAdConsent(onYesCallback, onNoCallback) {
-        document.getElementById('popupTitle').innerText = "Pynthikna peit video";
-        document.getElementById('popupMessage').innerText = "Phi lah ban ai jingkyrshan lem ïa ngi da kaba phin peit video shwa khyndiat?.";
-        
-        const container = document.getElementById('popupActions');
-        container.innerHTML = '';
-
-        const noBtn = document.createElement('button');
-        noBtn.className = "px-4 py-2 text-sm font-bold rounded-xl cursor-pointer transition bg-slate-200 text-slate-700 hover:bg-slate-300";
-        noBtn.innerText = "Em";
-        noBtn.onclick = () => {
-            toggleModal(false);
-            onNoCallback();
-        };
-
-        const yesBtn = document.createElement('button');
-        yesBtn.className = "px-4 py-2 text-sm font-bold rounded-xl cursor-pointer transition bg-blue-600 text-white hover:bg-blue-700";
-        yesBtn.innerText = "Hooid";
-        yesBtn.onclick = () => {
-            toggleModal(false);
-            onYesCallback();
-        };
-
-        container.appendChild(noBtn);
-        container.appendChild(yesBtn);
-        toggleModal(true);
-    }
-
-    function showEnforcedAd(adTypeName, onCompleteCallback) {
-        const titleBadge = adTypeName === "Interstitial" ? "🎬 Interstitial Advertisement" : "🎁 Enforced Reward Advertisement";
-        document.getElementById('popupTitle').innerText = titleBadge;
-        document.getElementById('popupMessage').innerText = `Loading premium partner streaming data... Remaining: 5s.`;
-        
-        const container = document.getElementById('popupActions');
-        container.innerHTML = '';
-
-        const statusLabel = document.createElement('div');
-        statusLabel.className = "w-full text-center text-sm font-medium text-slate-400 py-2 animate-pulse";
-        statusLabel.innerText = `Displaying Ads ${adTypeName} (Required Placement)...`;
-        container.appendChild(statusLabel);
-        
-        toggleModal(true);
-
-        let timerLeft = 5;
-        const trackingInterval = setInterval(() => {
-            if (timerLeft > 0) {
-                document.getElementById('popupMessage').innerText = `Streaming secure promotional layout assets... Remaining: ${timerLeft}s.`;
-                timerLeft--;
-            } else {
-                clearInterval(trackingInterval);
-                toggleModal(false);
-                if (onCompleteCallback) onCompleteCallback();
-            }
-        }, 1000);
-    }
-
-    function toggleModal(show) {
-        const modal = document.getElementById('popupModal');
-        if (show) modal.classList.remove('hidden');
-        else modal.classList.add('hidden');
-    }
-
-    function handleInputChange() {
-        document.getElementById('definitionBox').classList.add('hidden');
-        // Re-display native elements if layout is edited
-        document.getElementById('adWrapperZone').classList.remove('hidden');
-        document.getElementById('midNativeAdContainer').classList.remove('hidden');
-    }
-
-    function handleSearch() {
-        const query = document.getElementById('wordInput').value.trim().toLowerCase();
-        if (!query) {
-            showAlert("Pynkynmaw!!!", "Sngewbha thoh ka kyntien pareng ba phi kwah.");
-            return;
-        }
-
-        cachedPendingQuery = query;
-        currentSearchCount++; 
-
-        const isInterstitialEnforced = (currentSearchCount >= 6 && (currentSearchCount - 6) % 12 === 0);
-        const isRewardedEnforced = (currentSearchCount >= 13 && (currentSearchCount - 13) % 10 === 0);
-
-        if (isInterstitialEnforced) {
-            showEnforcedAd("Interstitial", () => { triggerDelayedLookupSequence(); });
-            return;
-        }
-
-        if (isRewardedEnforced) {
-            showEnforcedAd("Rewarded", () => { triggerDelayedLookupSequence(); });
-            return;
-        }
-
-        if (!hasCheckedFirstAd) {
-            hasCheckedFirstAd = true; 
-            askAdConsent(
-                () => { showEnforcedAd("First Session Rewarded", () => { triggerDelayedLookupSequence(); }); },
-                () => { triggerDelayedLookupSequence(); }
-            );
-        } else {
-            triggerDelayedLookupSequence();
-        }
-    }
-
-    function triggerDelayedLookupSequence() {
-        document.getElementById('definitionBox').classList.add('hidden');
-        
-        const loader = document.getElementById('searchLoader');
-        loader.classList.remove('hidden');
-        loader.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-
+    if (watched) {
+        alert("Rewarded Ad Playing...");
         setTimeout(() => {
-            loader.classList.add('hidden');
-            executeLookupSequence(cachedPendingQuery);
-        }, 1200);
+            alert("Reward Earned!");
+            if (callback) callback();
+        }, 2000);
+    }
+}
+
+function shouldShowInterstitial(count) {
+    return (
+        count === 5 ||
+        count === 10 ||
+        count === 20 ||
+        count === 30 ||
+        count === 40 ||
+        count === 50
+    );
+}
+
+function shouldShowRewarded(count) {
+    return (
+        count === 15 ||
+        count === 30 ||
+        count === 45 ||
+        count === 60
+    );
+}
+
+const cardThemes = [
+    "#dbeafe",
+    "#dcfce7",
+    "#fef3c7",
+    "#fee2e2",
+    "#ede9fe",
+    "#fce7f3",
+    "#cffafe",
+    "#f3f4f6"
+];
+
+function hideResults() {
+
+    document.getElementById(
+        'definitionBox'
+    ).classList.add('hidden');
+
+}
+    function handleSearch() {
+
+    const word =
+        document.getElementById('wordInput')
+        .value.trim().toLowerCase();
+
+    if (!word) {
+        alert("Sngewbha thoh ka kyntien.");
+        return;
     }
 
-    function executeLookupSequence(word) {
-        /* Hides entire native container frame to collapse white space layout gaps completely */
-        document.getElementById('adWrapperZone').classList.add('hidden');
-        document.getElementById('midNativeAdContainer').classList.add('hidden');
-        
-        const defBox = document.getElementById('definitionBox');
-        const htmlContentArea = document.getElementById('htmlContentArea');
-        const exampleTextEl = document.getElementById('exampleText');
-        const watermark = document.getElementById('watermark');
+    if (!firstSearchRewardAsked) {
 
-        const htmlResultString = localDictionary[word];
-        watermark.textContent = word.toUpperCase();
+        firstSearchRewardAsked = true;
 
-        if (htmlResultString) {
-            htmlContentArea.innerHTML = htmlResultString;
-            exampleTextEl.innerText = secondaryExampleDatabase[word] || `Example sentence context output for standard term "${word}".`;
+        const wantReward = confirm(
+            "Watch a rewarded ad before your first search?"
+        );
+
+        if (wantReward) {
+
+            showRewardedAd(() => {
+                executeSearch(word);
+            });
+
+            return;
+        }
+    }
+
+    executeSearch(word);
+}
+
+function executeSearch(word) {
+
+    searchCount++;
+
+    if (shouldShowInterstitial(searchCount)) {
+        showInterstitialAd();
+    }
+
+    if (shouldShowRewarded(searchCount)) {
+
+        showRewardedAd(() => {
+            continueSearch(word);
+        });
+
+        return;
+    }
+
+    continueSearch(word);
+}
+
+function shareApp() {
+
+    showInterstitialAd();
+
+    setTimeout(() => {
+
+        const shareText =
+`📚 KB's Dictionary English sha Khasi
+
+Download now:
+https://your-download-link.com
+
+Learn Khasi and English easily!`;
+
+        if (navigator.share) {
+
+            navigator.share({
+                title: "KB's Dictionary",
+                text: shareText
+            });
+
         } else {
-            htmlContentArea.innerHTML = `
-                <strong><u>Khasi word:</u></strong>
-                <br><br><em><p>=>Jingtip Kyllum:</i></p>
-                <p>=> Khlem ïoh jingbatai shaphang kane <b>"${word}"</b> ka Kyntien.</p></em>`;
-            exampleTextEl.innerText = `Khlem don Nongmuna na bynta kane "${word}" ka Kyntien.`;
+
+            navigator.clipboard.writeText(shareText);
+
+            alert("Share message copied to clipboard.");
         }
 
-        defBox.classList.remove('hidden');
-        defBox.scrollTop = 0;
-        defBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 1000);
+}
+
+function isOnline() {
+    return navigator.onLine;
+}
+
+
+async function continueSearch(word) {
+
+    document.getElementById(
+        'nativeAdContainer'
+    ).classList.remove('hidden');
+
+    const loader =
+        document.getElementById('searchLoader');
+
+    const defBox =
+        document.getElementById('definitionBox');
+
+    loader.classList.remove('hidden');
+    defBox.classList.add('hidden');
+
+    let definition = null;
+    let example = null;
+
+    // Try Firebase first
+try {
+
+    if (
+        isOnline() &&
+        window.db &&
+        window.doc &&
+        window.getDoc
+    ) {
+
+        const docRef =
+            window.doc(
+                window.db,
+                "dictionary",
+                word
+            );
+
+        const snap =
+            await window.getDoc(docRef);
+
+        if (snap.exists()) {
+
+            definition =
+                snap.data().definition;
+
+            example =
+                snap.data().example;
+        }
     }
+
+} catch (e) {
+
+    console.log(
+        "Firebase unavailable. Using local."
+    );
+}
+
+// If Firebase didn't return anything,
+// use localDictionary
+if (!definition) {
+    definition =
+        localDictionary[word] ||
+        "Khlem ïoh jingbatai.";
+
+    example =
+        secondaryExampleDatabase[word] ||
+        "Khlem don Nongmuna.";
+}
+
+    loader.classList.add('hidden');
+
+    document.getElementById(
+        'htmlContentArea'
+    ).innerHTML = definition;
+
+    document.getElementById(
+        'exampleText'
+    ).innerText = example;
+
+    const randomColor =
+        cardThemes[
+            Math.floor(
+                Math.random() *
+                cardThemes.length
+            )
+        ];
+
+    defBox.style.backgroundColor =
+        randomColor;
+
+    document.getElementById(
+        "wordWatermark"
+    ).innerText =
+        word.toUpperCase();
+
+    defBox.classList.remove('hidden');
+}
+
+
 </script>
+<script type="module">
+
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+    getFirestore,
+    doc,
+    getDoc
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyBnNnQHozaejJrJYOsxjR4LTLo8JN8OaLY",
+    authDomain: "arklyn-classifieds.firebaseapp.com",
+    projectId: "arklyn-classifieds",
+    storageBucket: "arklyn-classifieds.appspot.com",
+    messagingSenderId: "381373667340",
+    appId: "1:381373667340:web:828ddbd1d5354d29387629"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+window.db = db;
+window.doc = doc;
+window.getDoc = getDoc;
+
+</script>
+
 </body>
 </html>
