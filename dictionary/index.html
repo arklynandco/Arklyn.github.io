@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -110,11 +110,6 @@ onkeypress="if(event.key==='Enter')handleSearch()">
         <p>Searching...</p>
     </div>
     
-    <!-- Banner Ad Middle -->
-<div id="middleBannerAd" class="card" style="text-align:center; margin-top:20px;">
-    <!-- Replace with your AdSense code -->
-    <p>Banner Advertisement</p>
-</div>
 
 <!-- Result Card -->
 <div id="definitionBox" class="card hidden result-card">
@@ -138,28 +133,6 @@ onkeypress="if(event.key==='Enter')handleSearch()">
 
 </div>
 
-<!-- Native Ad -->
-    <div id="nativeAdContainer"
-         class="hidden"
-         style="
-            margin-top:10px;
-            padding-top:10px;
-            border-top:5px solid #eee;">
-
-        <h4>Sponsored</h4>
-
-        <div style="display:flex;gap:10px;align-items:center;">
-            <img src="https://via.placeholder.com/80"
-                 alt="Ad"
-                 style="width:80px;height:40px;border-radius:8px;">
-
-            <div>
-                <h4>Advertisement Title</h4>
-                <p>Advertisement description appears here.</p>
-                <button>Install</button>
-            </div>
-        </div>
-    </div>
         
 </main>
 
@@ -171,21 +144,7 @@ onkeypress="if(event.key==='Enter')handleSearch()">
     </div>
 </div>
 
-<!-- Bottom Banner -->
-<div id="bottomBannerAd"
-     style="
-        position:fixed;
-        bottom:0;
-        left:0;
-        width:100%;
-        background:white;
-        border-top:1px solid #ddd;
-        padding:10px;
-        text-align:center;
-        z-index:50;">
-    <!-- Replace with AdSense code -->
-    <strong>Bottom Banner Advertisement</strong>
-</div>
+
 
 <script>
   
@@ -199,6 +158,8 @@ window.addEventListener("offline", () => {
   let searchCount = 0;
 let firstSearchRewardAsked = false;
 const localDictionary = {
+  
+
   
 "a": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> U; Ka; Uwei; Kawei;  Shi.<br>U dak pule alphabet u ba nyngkong napdeng ki alphabet phareng.</em>`,
 "aardvark": `<strong><b><u>Khasi word:</u></strong><br><br><em><p><i> Noun:</i></b></p><p>=> U kynja mrad uba bam dkhiew.</em>`,
@@ -1320,29 +1281,12 @@ const localDictionary = {
 
     };
 
-    const secondaryExampleDatabase = {
+ const secondaryExampleDatabase = {
         "a": "I saw a bird layout tier node.",
         "c": "u dak ba lai na pdeng ki alphabet."
   };
-    
-    function showInterstitialAd() {
-    alert("Interstitial Ad Placeholder");
    
-}
 
-function showRewardedAd(callback) {
-    const watched = confirm(
-        "Watch a rewarded ad to continue?"
-    );
-
-    if (watched) {
-        alert("Rewarded Ad Playing...");
-        setTimeout(() => {
-            alert("Reward Earned!");
-            if (callback) callback();
-        }, 2000);
-    }
-}
 
 function shouldShowInterstitial(count) {
     return (
@@ -1395,38 +1339,46 @@ function hideResults() {
 
     if (!firstSearchRewardAsked) {
 
-        firstSearchRewardAsked = true;
+    firstSearchRewardAsked = true;
 
-        const wantReward = confirm(
-            "Watch a rewarded ad before your first search?"
-        );
+    const wantReward = confirm(
+        "Watch a rewarded ad before your first search?"
+    );
 
-        if (wantReward) {
+    if (wantReward) {
 
-            showRewardedAd(() => {
-                executeSearch(word);
-            });
+        pendingWord = word;
 
-            return;
+        if (typeof Android !== "undefined") {
+            Android.showRewarded();
         }
+
+        return;
     }
+}
 
     executeSearch(word);
 }
+
+let pendingWord = "";
 
 function executeSearch(word) {
 
     searchCount++;
 
     if (shouldShowInterstitial(searchCount)) {
-        showInterstitialAd();
+        if (typeof Android !== "undefined") {
+            Android.showInterstitial();
+        }
     }
 
     if (shouldShowRewarded(searchCount)) {
 
-        showRewardedAd(() => {
-            continueSearch(word);
-        });
+        pendingWord = word;
+
+        if (typeof Android !== "undefined") {
+            Android.showRewarded();
+        }
 
         return;
     }
@@ -1434,9 +1386,18 @@ function executeSearch(word) {
     continueSearch(word);
 }
 
+function onRewardEarned() {
+
+    if (pendingWord) {
+        continueSearch(pendingWord);
+        pendingWord = "";
+    }
+
+}
+
 function shareApp() {
 
-    showInterstitialAd();
+    
 
     setTimeout(() => {
 
@@ -1472,9 +1433,6 @@ function isOnline() {
 
 async function continueSearch(word) {
 
-    document.getElementById(
-        'nativeAdContainer'
-    ).classList.remove('hidden');
 
     const loader =
         document.getElementById('searchLoader');
